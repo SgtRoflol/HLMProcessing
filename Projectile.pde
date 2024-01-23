@@ -34,8 +34,6 @@ class Projectile{
         fill(255, 255, 0);
         if (isActive) {
             checkBounds();
-            println(dir.x);
-            println(dir.y);
             Pos = Pos.add(dir);
             ellipse(Pos.x,Pos.y,10,10);
         }

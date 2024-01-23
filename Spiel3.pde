@@ -1,7 +1,7 @@
 Camera worldCamera;
 Player Play;
-int ammo;
-Projectile[] Bullets = new Projectile[10];
+Weapon Waffe;
+
 
 
 int imgX;
@@ -9,14 +9,12 @@ int imgY;
 
 
 void setup() {
-    ammo = 10;
+    frameRate(60);
     smooth(2);
     size(640, 640);
     worldCamera = new Camera();
     Play = new Player();
-    for (int i = 0; i < Bullets.length; i++) {
-        Bullets[i] = new Projectile(4);
-    }
+    Waffe = new Weapon("Waffe",30,10,5); // Konstruktor -> String Name, int maxAmmo, int projSpeed, int cad
 }
 
 void draw() {
@@ -25,37 +23,31 @@ void draw() {
     pushMatrix();
     translate( -worldCamera.pos.x, -worldCamera.pos.y);
     worldCamera.draw();
-
-    for (int i = 0; i < Bullets.length; i++) {
-        Bullets[i].render();
-    }
+    Waffe.render();
+    Waffe.shoot();
+    
     //WorldCamera Ende
     rect(25,25,25,25);
     popMatrix();
     
     fill(0);
-    text(ammo,100,100);
+    text(Waffe.ammo,100,100);
     fill(255);
     
     Play.move();
-    println(Play.x);
     
     
     
 }
-void mouseClicked() {
-    for (int i = 0; i < Bullets.length; i++) {
-        if (!Bullets[i].isActive && ammo != 0) {
-            Bullets[i].spawn();
-            ammo--;
-            break;
-        }
-    }
+
+void mousePressed() {
+    Waffe.isShooting = true;
 }
-    
-    
-    void keyPressed() {
-        if (key == 'r') {
-            ammo = 10;
-        }
-    }
+
+void mouseReleased() {
+    Waffe.isShooting = false;
+}
+
+void keyPressed() {
+    Waffe.reload();
+}
