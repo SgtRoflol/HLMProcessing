@@ -3,6 +3,7 @@ class Projectile{
     PVector Pos;
     float speed;
     PVector dir;
+    Wall[] Walls;
     
     Projectile(float speed) {
         this.speed = speed;
@@ -19,52 +20,44 @@ class Projectile{
     }
     
     void spawn() {
+        
         //Wird erst zurückgesetzt
-        init();
         //Mausvektor
-        PVector mouse = new PVector(worldCamera.pos.x + mouseX,worldCamera.pos.y + mouseY);
         //Zeilvektor wird berechnet -> Verbindungsvektor von Spielerpsition zu Mausposition
+        init();
+        PVector mouse = new PVector(worldCamera.pos.x + mouseX,worldCamera.pos.y + mouseY);
         dir = PVector.sub(mouse,Pos);
         
         //Vektor wird normalisiert -> Alle Komponenten werden durch den selben Wert dividiert
         //Vektorrichtung bleibt gleich aber länge wird 1
-        dir.normalize();
         //Richtungsvektor wird mit Geschwindigkeit multipliziert -> Vekor wird um Geschwindigkeitswert verlängert
-        dir.mult(speed);
-        
         //Projektil wird auf aktiv gesetzt -> Nicht mehr an Spieler fixiert, sondern kann sich nun richtung Ziel Bewegen
+        dir.normalize();
+        dir.mult(speed);
         isActive = true;
-        //Wird sicherheitshalber noch einmal in Position zurückgesetzt, um Fehler zu vermeiden
-        Pos.x = worldCamera.pos.x + width / 2;
-        Pos.y = worldCamera.pos.y + height / 2;
     }
     
     void render() {
         //Kreis wird mittig von Koordinaten aus gezeichnet
-        ellipseMode(CENTER);
         //Aktuell in draw genutzte Farbe wird gespeichert und später auf diesen Wert zurückgesetzt
         //um Farbfehler zu vermeiden
+        ellipseMode(CENTER);
         color curcol = g.fillColor;
         fill(255, 255, 0);
         
         if (isActive) {
             //Überprüfung, ob sich das Projektil ausserhalb des Bildschirms befindet
-            checkBounds();
             //Projektil wird um Richtungsvektor verschoben
-            Pos = Pos.add(dir);
             //Projektil wird gezeichnet
-            ellipse(Pos.x,Pos.y,10,10);
+            checkBounds();
+            Pos = Pos.add(dir);
+            ellipse(Pos.x,Pos.y,10,10);   
         }
-        
         //Wenn nicht aktiv, fixiert auf Spielerposition
         else{
             Pos.x = worldCamera.pos.x + width / 2;
             Pos.y = worldCamera.pos.y + height / 2;
-        }
-        
-        
-        
-        
+        }   
         //Farbe wird auf vorherigen Wert zurückgesett
         fill(curcol);
     }
@@ -74,8 +67,7 @@ class Projectile{
         //Wenn sich das Projektil ausserhalb des Bildschirms befindet, wird es zurückgesetzt
         if (Pos.x > worldCamera.pos.x + width || Pos.x < worldCamera.pos.x) {
             init();
-        }
-        
+        }    
         if (Pos.y > worldCamera.pos.y + height || Pos.y < worldCamera.pos.y) {
             init();
         }

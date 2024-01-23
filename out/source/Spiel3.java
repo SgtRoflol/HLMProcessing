@@ -20,9 +20,12 @@ Player Play; //Spieler
 Weapon[] Waffen; //Array mit allen Waffen
 Weapon curWeapon; //Aktuelle Waffe
 int weapInd; //Index der aktuellen Waffe, wird benötigt um wechseln zu können
+Wall Wand;
+Hud Overlay;
 
 
 public void setup() {
+    Wand = new Wall(new PVector(700,200),300,100);
     weapInd = 0;
     //Framerate und Anti-Aliasing setzen
     frameRate(60);
@@ -34,7 +37,8 @@ public void setup() {
     Waffen[0] = new Weapon("Waffe",30,10,5,50);// Konstruktor -> String Name, int maxAmmo, int projSpeed, int cad
     Waffen[1] = new Weapon("Waffe2",10,20,30,60);
     Waffen[2] = new Weapon("Waffe3",5,40,70,100); 
-    curWeapon = Waffen[weapInd]; // Aktuelle Waffe
+    curWeapon = Waffen[0]; // Aktuelle Waffe
+    Overlay = new Hud();
 }
 
 public void draw() {
@@ -44,26 +48,16 @@ public void draw() {
     translate( -worldCamera.pos.x, -worldCamera.pos.y); //Worldcam verschiebt Achsen um Bewegungswert
     worldCamera.draw();
     //Alle Waffen/Alle AKTIVEN Projektile aller Waffen rendern
-    for (int i = 0; i < Waffen.length; i++) {
-        Waffen[i].render();
+    for (Weapon Waffe : Waffen) {
+        Waffe.render();
     }
     //Aktuelle Waffe abfeuern falls möglich
     curWeapon.shoot();
-    
+    Wand.render();
     //WorldCamera Ende
     rect(25,25,25,25);
     popMatrix();
-    
-    fill(0);
-    //Zeigt Waffenname und Munition
-    textSize(35);
-    text(curWeapon.ammo,30,40);
-    //Falls Waffe aktuell Cooldown hat (gerade geschossen wurde / nachgeladen wird) -> Name rot
-    if (curWeapon.cooldown != 0) {
-        fill(255,0,0);
-    }
-    text(curWeapon.Name,30,70);
-    
+    Overlay.render(); 
     fill(255);
     
     //Spieler zur Maus drehen
@@ -120,6 +114,22 @@ class Camera {
         }
     }
 }
+class Hud{
+    Hud() {
+        
+    }
+    public void render() {
+        fill(0);
+        //Zeigt Waffenname und Munition
+        textSize(35);
+        text(curWeapon.ammo,30,40);
+        //Falls Waffe aktuell Cooldown hat (gerade geschossen wurde / nachgeladen wird) -> Name rot
+        if (curWeapon.cooldown != 0) {
+            fill(255,0,0);
+        }
+        text(curWeapon.Name,30,70);
+    }
+}
 class Player{
     float angle;
     float x;
@@ -159,6 +169,7 @@ class Projectile{
     PVector Pos;
     float speed;
     PVector dir;
+    Wall[] Walls;
     
     Projectile(float speed) {
         this.speed = speed;
@@ -191,8 +202,8 @@ class Projectile{
         //Projektil wird auf aktiv gesetzt -> Nicht mehr an Spieler fixiert, sondern kann sich nun richtung Ziel Bewegen
         isActive = true;
         //Wird sicherheitshalber noch einmal in Position zurückgesetzt, um Fehler zu vermeiden
-        Pos.x = worldCamera.pos.x + width / 2;
-        Pos.y = worldCamera.pos.y + height / 2;
+        // Pos.x = worldCamera.pos.x + width / 2;
+        // Pos.y = worldCamera.pos.y + height / 2;
     }
     
     public void render() {
@@ -211,16 +222,11 @@ class Projectile{
             //Projektil wird gezeichnet
             ellipse(Pos.x,Pos.y,10,10);
         }
-        
         //Wenn nicht aktiv, fixiert auf Spielerposition
         else{
             Pos.x = worldCamera.pos.x + width / 2;
             Pos.y = worldCamera.pos.y + height / 2;
-        }
-        
-        
-        
-        
+        }   
         //Farbe wird auf vorherigen Wert zurückgesett
         fill(curcol);
     }
@@ -236,6 +242,29 @@ class Projectile{
             init();
         }
     }
+    
+    public void getWalls(Wall[] Walls) {
+        this.Walls = Walls;
+    }
+    
+}
+class Wall{
+    PVector Pos;
+    int w;
+    int h;
+    
+    Wall(PVector Pos, int w, int h) {
+        this.Pos = Pos;
+        this.w = w;
+        this.h = h;
+    }
+    public void render() {
+        rectMode(CENTER);
+        fill(0,255,0);
+        rect(Pos.x,Pos.y,w,h);
+        
+    }
+    
     
 }
 class Weapon{
@@ -268,8 +297,8 @@ class Weapon{
     
     public void render() {    
         //Alle Projektile rendern  
-        for (int i = 0; i < Bullets.length; i++) {
-            Bullets[i].render();
+        for (Projectile Bullet : Bullets) {
+            Bullet.render();
         } 
         //Wenn der Cooldown ziwschen Schüssen/nach dem Nachladen noch nicht 0 ist -> runterzählen
         if (cooldown > 1.0f) {
@@ -279,7 +308,6 @@ class Weapon{
         else{
             cooldown = 0;
         }
-        println(cooldown);
     }
     
     public void shoot() {
@@ -287,10 +315,10 @@ class Weapon{
         if (isShooting && cooldown == 0) {
             
             //Überprüfen, ob aktuell noch ein Projektil nicht geschossen wurde und Munition übrig ist
-            for (int i = 0; i < Bullets.length; i++) {
-                if (!Bullets[i].isActive && ammo != 0) {
+            for (Projectile Bullet : Bullets) {
+                if (!Bullet.isActive && ammo != 0) {
                     //Ungeschossenes Projektil schiessen, Munition verringern und cooldown setzen
-                    Bullets[i].spawn();
+                    Bullet.spawn();
                     ammo--;
                     cooldown = cad;
                     break;

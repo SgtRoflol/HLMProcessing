@@ -3,9 +3,12 @@ Player Play; //Spieler
 Weapon[] Waffen; //Array mit allen Waffen
 Weapon curWeapon; //Aktuelle Waffe
 int weapInd; //Index der aktuellen Waffe, wird benötigt um wechseln zu können
+Wall Wand;
+Hud Overlay;
 
 
 void setup() {
+    Wand = new Wall(new PVector(700,200),300,100);
     weapInd = 0;
     //Framerate und Anti-Aliasing setzen
     frameRate(60);
@@ -17,7 +20,8 @@ void setup() {
     Waffen[0] = new Weapon("Waffe",30,10,5,50);// Konstruktor -> String Name, int maxAmmo, int projSpeed, int cad
     Waffen[1] = new Weapon("Waffe2",10,20,30,60);
     Waffen[2] = new Weapon("Waffe3",5,40,70,100); 
-    curWeapon = Waffen[weapInd]; // Aktuelle Waffe
+    curWeapon = Waffen[0]; // Aktuelle Waffe
+    Overlay = new Hud();
 }
 
 void draw() {
@@ -27,26 +31,16 @@ void draw() {
     translate( -worldCamera.pos.x, -worldCamera.pos.y); //Worldcam verschiebt Achsen um Bewegungswert
     worldCamera.draw();
     //Alle Waffen/Alle AKTIVEN Projektile aller Waffen rendern
-    for (int i = 0; i < Waffen.length; i++) {
-        Waffen[i].render();
+    for (Weapon Waffe : Waffen) {
+        Waffe.render();
     }
     //Aktuelle Waffe abfeuern falls möglich
     curWeapon.shoot();
-    
+    Wand.render();
     //WorldCamera Ende
     rect(25,25,25,25);
     popMatrix();
-    
-    fill(0);
-    //Zeigt Waffenname und Munition
-    textSize(35);
-    text(curWeapon.ammo,30,40);
-    //Falls Waffe aktuell Cooldown hat (gerade geschossen wurde / nachgeladen wird) -> Name rot
-    if (curWeapon.cooldown != 0) {
-        fill(255,0,0);
-    }
-    text(curWeapon.Name,30,70);
-    
+    Overlay.render(); 
     fill(255);
     
     //Spieler zur Maus drehen
