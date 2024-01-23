@@ -7,8 +7,9 @@ class Weapon{
     int projSpeed;
     float cad;
     float cooldown = 0;
+    float reloadTime;
     
-    Weapon(String Name, int maxAmmo, int projSpeed, int cad) {
+    Weapon(String Name, int maxAmmo, int projSpeed, int cad,float reloadTime) {
         this.Name = Name;
         this.maxAmmo = maxAmmo;
         this.ammo = maxAmmo;
@@ -18,6 +19,7 @@ class Weapon{
             Bullets[i] = new Projectile(projSpeed);
         }
         this.cad = cad;
+        this.reloadTime = reloadTime;
         
         
     }
@@ -52,6 +54,7 @@ class Weapon{
     
     void reload() {
         if (key == 'r') {
+            cooldown = reloadTime;
             ammo = maxAmmo;
         }
     }

@@ -22,30 +22,25 @@ Weapon curWeapon;
 int weapInd;
 
 
-
-int imgX;
-int imgY;
-
-
 public void setup() {
     weapInd = 0;
     frameRate(60);
     /* smooth commented out by preprocessor */;
     /* size commented out by preprocessor */;
-    worldCamera = new Camera();
+    worldCamera = new Camera(); // Worldcamera wird genutzt, um Level größer als der Screen erstellen zu können
     Play = new Player();
     Waffen = new Weapon[3];
-    Waffen[0] = new Weapon("Waffe",30,10,5);
-    Waffen[1] = new Weapon("Waffe2",10,20,30);
-    Waffen[2] = new Weapon("Waffe3",1,40,100); // Konstruktor -> String Name, int maxAmmo, int projSpeed, int cad
-    curWeapon = Waffen[weapInd];
+    Waffen[0] = new Weapon("Waffe",30,10,5,50);// Konstruktor -> String Name, int maxAmmo, int projSpeed, int cad
+    Waffen[1] = new Weapon("Waffe2",10,20,30,60);
+    Waffen[2] = new Weapon("Waffe3",5,40,70,100); 
+    curWeapon = Waffen[weapInd]; // Aktuelle Waffe
 }
 
 public void draw() {
     background(255);
     //Alles andere muss nach der Worldcamera gezeichnet werden!
     pushMatrix();
-    translate( -worldCamera.pos.x, -worldCamera.pos.y);
+    translate( -worldCamera.pos.x, -worldCamera.pos.y); //Worldcam verschiebt Achsen um Bewegungswert
     worldCamera.draw();
     for (int i = 0; i < Waffen.length; i++) {
         Waffen[i].render();
@@ -57,8 +52,14 @@ public void draw() {
     popMatrix();
     
     fill(0);
-    text(curWeapon.ammo,100,100);
-    text(curWeapon.Name,100,80);
+    //Zeigt Waffenname und Munition
+    textSize(35);
+    
+    text(curWeapon.ammo,30,40);
+    if (curWeapon.cooldown != 0) {
+        fill(255,0,0);
+    }
+    text(curWeapon.Name,30,70);
     fill(255);
     
     Play.move();
@@ -68,7 +69,7 @@ public void draw() {
 }
 
 public void mousePressed() {
-    curWeapon.isShooting = true;
+    curWeapon.isShooting = true; //Wird gesetzt um beständiges Schießen bei Halten der Maustaste zu ermöglichen
 }
 
 public void mouseReleased() {
@@ -76,6 +77,18 @@ public void mouseReleased() {
 }
 
 public void keyPressed() {
+    //Zwischen Waffen wechseln
+    switchWeapons();
+    
+    //Es kann nur nachgeladen werden, wenn geschossen wird, ausserdem kann einige Zeit nicht geschossen
+    //werden, um dauerladen und Schießen zu vermeiden
+    if (!curWeapon.isShooting) {
+        curWeapon.reload();
+    }
+}
+
+public void switchWeapons() {
+    // Akutelle Waffe wird auf Waffe aus Array an allen Waffen gesetzt, somit können diese gewechselt werden
     if (key == 'e' && weapInd < Waffen.length - 1) {
         curWeapon = Waffen[weapInd + 1];
         weapInd++;
@@ -85,9 +98,6 @@ public void keyPressed() {
         weapInd--;
     }
     
-    if (!curWeapon.isShooting) {
-        curWeapon.reload();
-    }
 }
 
 class Camera {
@@ -204,8 +214,9 @@ class Weapon{
     int projSpeed;
     float cad;
     float cooldown = 0;
+    float reloadTime;
     
-    Weapon(String Name, int maxAmmo, int projSpeed, int cad) {
+    Weapon(String Name, int maxAmmo, int projSpeed, int cad,float reloadTime) {
         this.Name = Name;
         this.maxAmmo = maxAmmo;
         this.ammo = maxAmmo;
@@ -215,6 +226,7 @@ class Weapon{
             Bullets[i] = new Projectile(projSpeed);
         }
         this.cad = cad;
+        this.reloadTime = reloadTime;
         
         
     }
@@ -249,6 +261,7 @@ class Weapon{
     
     public void reload() {
         if (key == 'r') {
+            cooldown = reloadTime;
             ammo = maxAmmo;
         }
     }
@@ -257,7 +270,7 @@ class Weapon{
 
 
   public void settings() { size(640, 640);
-smooth(2); }
+smooth(4); }
 
   static public void main(String[] passedArgs) {
     String[] appletArgs = new String[] { "Spiel3" };
