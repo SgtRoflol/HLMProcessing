@@ -17,7 +17,9 @@ public class Spiel3 extends PApplet {
 
 Camera worldCamera;
 Player Play;
-Weapon Waffe;
+Weapon[] Waffen;
+Weapon curWeapon;
+int weapInd;
 
 
 
@@ -26,11 +28,17 @@ int imgY;
 
 
 public void setup() {
+    weapInd = 0;
+    frameRate(60);
     /* smooth commented out by preprocessor */;
     /* size commented out by preprocessor */;
     worldCamera = new Camera();
     Play = new Player();
-    Waffe = new Weapon("Waffe",10,5,5);
+    Waffe[] = new Weapon[3]
+    Waffen[0] = new Weapon("Waffe",30,10,5);
+    Waffen[1] = new Weapon("Waffe2",10,20,20);
+    Waffen[2] = new Weapon("Waffe3",1,40,40); // Konstruktor -> String Name, int maxAmmo, int projSpeed, int cad
+    curWeapon = Waffen[weapInd];
 }
 
 public void draw() {
@@ -39,34 +47,43 @@ public void draw() {
     pushMatrix();
     translate( -worldCamera.pos.x, -worldCamera.pos.y);
     worldCamera.draw();
-    Waffe.render();
+    curWeapon.render();
+    curWeapon.shoot();
     
     //WorldCamera Ende
     rect(25,25,25,25);
     popMatrix();
     
     fill(0);
-    text(Waffe.ammo,100,100);
+    text(curWeapon.ammo,100,100);
+    text(curWeapon.Name,100,80);
     fill(255);
     
     Play.move();
-    println(Play.x);
     
     
     
 }
 
 public void mousePressed() {
-    Waffe.isShooting = true;
-    Waffe.shoot();
+    curWeapon.isShooting = true;
 }
 
 public void mouseReleased() {
-    Waffe.isShooting = false;
+    curWeapon.isShooting = false;
 }
 
 public void keyPressed() {
-    Waffe.reload();
+    if (key == 'e' && weapInd < Waffen.length) {
+        curWeapon = Waffen[weapInd + 1];
+        weapInd++;
+    }
+    if (key == 'q' && weapInd > 0) {
+        curWeapon = Waffen[weapInd + 1];
+        weapInd--;
+    }
+    
+    curWeapon.reload();
 }
 
 class Camera {
@@ -152,8 +169,6 @@ class Projectile{
         fill(255, 255, 0);
         if (isActive) {
             checkBounds();
-            println(dir.x);
-            println(dir.y);
             Pos = Pos.add(dir);
             ellipse(Pos.x,Pos.y,10,10);
         }
@@ -183,7 +198,8 @@ class Weapon{
     Projectile[] Bullets;
     boolean isShooting = false;
     int projSpeed;
-    int cad;
+    float cad;
+    float cooldown = 0;
     
     Weapon(String Name, int maxAmmo, int projSpeed, int cad) {
         this.Name = Name;
@@ -195,23 +211,36 @@ class Weapon{
             Bullets[i] = new Projectile(projSpeed);
         }
         this.cad = cad;
+        
+        
     }
     
     public void render() {        for (int i = 0; i < Bullets.length; i++) {
             Bullets[i].render();
-        } }
+        } 
+        
+        if (cooldown > 1.0f) {
+            cooldown--;
+        }  
+        
+        else{
+            cooldown = 0;
+        }
+        println(cooldown);
+    }
     
     public void shoot() {
-        
-        if (isShooting) {
+        if (isShooting && cooldown == 0) {
             for (int i = 0; i < Bullets.length; i++) {
                 if (!Bullets[i].isActive && ammo != 0) {
                     Bullets[i].spawn();
                     ammo--;
+                    cooldown = cad;
                     break;
                 }
             }
         }
+        
     }
     
     public void reload() {
