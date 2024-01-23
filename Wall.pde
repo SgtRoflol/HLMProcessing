@@ -9,9 +9,13 @@ class Wall{
         this.h = h;
     }
     void render() {
-        rectMode(CENTER);
         fill(0,255,0);
+        rectMode(CORNER);
         rect(Pos.x,Pos.y,w,h);
+        fill(0);
+        stroke(0);
+        line(Pos.x,Pos.y,Pos.x + w,Pos.y + h);
+        line(Pos.x,Pos.y + h,Pos.x + w,Pos.y);
         
     }
     

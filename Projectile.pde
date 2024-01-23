@@ -50,6 +50,7 @@ class Projectile{
             //Projektil wird um Richtungsvektor verschoben
             //Projektil wird gezeichnet
             checkBounds();
+            collision();
             Pos = Pos.add(dir);
             ellipse(Pos.x,Pos.y,10,10);   
         }
@@ -73,4 +74,18 @@ class Projectile{
         }
     }
     
+    void getWalls(Wall[] Walls) {
+        this.Walls = Walls;
+    }
+    
+    void collision() {
+        for (Wall Wall : Walls) {
+            if (Pos.x >= Wall.Pos.x && Pos.x <= Wall.Pos.x + Wall.w && 
+                Pos.y >= Wall.Pos.y && Pos.y <= Wall.Pos.y + Wall.h) {
+                init();
+            } 
+        }
+    }
 }
+
+

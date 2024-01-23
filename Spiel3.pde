@@ -3,12 +3,15 @@ Player Play; //Spieler
 Weapon[] Waffen; //Array mit allen Waffen
 Weapon curWeapon; //Aktuelle Waffe
 int weapInd; //Index der aktuellen Waffe, wird benötigt um wechseln zu können
-Wall Wand;
+Wall[] Waende;
 Hud Overlay;
 
 
 void setup() {
-    Wand = new Wall(new PVector(700,200),300,100);
+    Waende = new Wall[3];
+    Waende[0] = new Wall(new PVector(700,200),300,100);
+    Waende[1] = new Wall(new PVector(200,600),200,70);
+    Waende[2] = new Wall(new PVector(10,100),300,100);
     weapInd = 0;
     //Framerate und Anti-Aliasing setzen
     frameRate(60);
@@ -22,6 +25,9 @@ void setup() {
     Waffen[2] = new Weapon("Waffe3",5,40,70,100); 
     curWeapon = Waffen[0]; // Aktuelle Waffe
     Overlay = new Hud();
+    for (Weapon Waffe : Waffen) {
+        Waffe.getWalls(Waende);
+    }
 }
 
 void draw() {
@@ -36,7 +42,9 @@ void draw() {
     }
     //Aktuelle Waffe abfeuern falls möglich
     curWeapon.shoot();
-    Wand.render();
+    for (Wall Wand : Waende) {
+        Wand.render();
+    }
     //WorldCamera Ende
     rect(25,25,25,25);
     popMatrix();

@@ -59,6 +59,12 @@ class Weapon{
         
     }
     
+    void getWalls(Wall[] Walls) {
+        for (Projectile Bullet : Bullets) {
+            Bullet.getWalls(Walls);
+        }
+    }
+    
     void reload() {
         //Munition zurücksetzen und Nachladecooldown setzen
         if (key == 'r') {

@@ -20,12 +20,15 @@ Player Play; //Spieler
 Weapon[] Waffen; //Array mit allen Waffen
 Weapon curWeapon; //Aktuelle Waffe
 int weapInd; //Index der aktuellen Waffe, wird benötigt um wechseln zu können
-Wall Wand;
+Wall[] Waende;
 Hud Overlay;
 
 
 public void setup() {
-    Wand = new Wall(new PVector(700,200),300,100);
+    Waende = new Wall[3];
+    Waende[0] = new Wall(new PVector(700,200),300,100);
+    Waende[1] = new Wall(new PVector(200,600),200,70);
+    Waende[2] = new Wall(new PVector(10,100),300,100);
     weapInd = 0;
     //Framerate und Anti-Aliasing setzen
     frameRate(60);
@@ -39,6 +42,9 @@ public void setup() {
     Waffen[2] = new Weapon("Waffe3",5,40,70,100); 
     curWeapon = Waffen[0]; // Aktuelle Waffe
     Overlay = new Hud();
+    for (Weapon Waffe : Waffen) {
+        Waffe.getWalls(Waende);
+    }
 }
 
 public void draw() {
@@ -53,7 +59,9 @@ public void draw() {
     }
     //Aktuelle Waffe abfeuern falls möglich
     curWeapon.shoot();
-    Wand.render();
+    for (Wall Wand : Waende) {
+        Wand.render();
+    }
     //WorldCamera Ende
     rect(25,25,25,25);
     popMatrix();
@@ -186,41 +194,39 @@ class Projectile{
     }
     
     public void spawn() {
+        
         //Wird erst zurückgesetzt
-        init();
         //Mausvektor
-        PVector mouse = new PVector(worldCamera.pos.x + mouseX,worldCamera.pos.y + mouseY);
         //Zeilvektor wird berechnet -> Verbindungsvektor von Spielerpsition zu Mausposition
+        init();
+        PVector mouse = new PVector(worldCamera.pos.x + mouseX,worldCamera.pos.y + mouseY);
         dir = PVector.sub(mouse,Pos);
         
         //Vektor wird normalisiert -> Alle Komponenten werden durch den selben Wert dividiert
         //Vektorrichtung bleibt gleich aber länge wird 1
-        dir.normalize();
         //Richtungsvektor wird mit Geschwindigkeit multipliziert -> Vekor wird um Geschwindigkeitswert verlängert
-        dir.mult(speed);
-        
         //Projektil wird auf aktiv gesetzt -> Nicht mehr an Spieler fixiert, sondern kann sich nun richtung Ziel Bewegen
+        dir.normalize();
+        dir.mult(speed);
         isActive = true;
-        //Wird sicherheitshalber noch einmal in Position zurückgesetzt, um Fehler zu vermeiden
-        // Pos.x = worldCamera.pos.x + width / 2;
-        // Pos.y = worldCamera.pos.y + height / 2;
     }
     
     public void render() {
         //Kreis wird mittig von Koordinaten aus gezeichnet
-        ellipseMode(CENTER);
         //Aktuell in draw genutzte Farbe wird gespeichert und später auf diesen Wert zurückgesetzt
         //um Farbfehler zu vermeiden
+        ellipseMode(CENTER);
         int curcol = g.fillColor;
         fill(255, 255, 0);
         
         if (isActive) {
             //Überprüfung, ob sich das Projektil ausserhalb des Bildschirms befindet
-            checkBounds();
             //Projektil wird um Richtungsvektor verschoben
-            Pos = Pos.add(dir);
             //Projektil wird gezeichnet
-            ellipse(Pos.x,Pos.y,10,10);
+            checkBounds();
+            collision();
+            Pos = Pos.add(dir);
+            ellipse(Pos.x,Pos.y,10,10);   
         }
         //Wenn nicht aktiv, fixiert auf Spielerposition
         else{
@@ -236,8 +242,7 @@ class Projectile{
         //Wenn sich das Projektil ausserhalb des Bildschirms befindet, wird es zurückgesetzt
         if (Pos.x > worldCamera.pos.x + width || Pos.x < worldCamera.pos.x) {
             init();
-        }
-        
+        }    
         if (Pos.y > worldCamera.pos.y + height || Pos.y < worldCamera.pos.y) {
             init();
         }
@@ -247,7 +252,17 @@ class Projectile{
         this.Walls = Walls;
     }
     
+    public void collision() {
+        for (Wall Wall : Walls) {
+            if (Pos.x >= Wall.Pos.x && Pos.x <= Wall.Pos.x + Wall.w && 
+                Pos.y >= Wall.Pos.y && Pos.y <= Wall.Pos.y + Wall.h) {
+                init();
+            } 
+        }
+    }
 }
+
+
 class Wall{
     PVector Pos;
     int w;
@@ -259,9 +274,12 @@ class Wall{
         this.h = h;
     }
     public void render() {
-        rectMode(CENTER);
         fill(0,255,0);
         rect(Pos.x,Pos.y,w,h);
+        fill(0);
+        stroke(0);
+        line(Pos.x,Pos.y Pos.x + w,Pos.y + h);
+        line(Pos.x,Pos.y + h,Pos.x + w,Pos.y);
         
     }
     
@@ -326,6 +344,12 @@ class Weapon{
             }
         }
         
+    }
+    
+    public void getWalls(Wall[] Walls) {
+        for (Projectile Bullet : Bullets) {
+            Bullet.getWalls(Walls);
+        }
     }
     
     public void reload() {
