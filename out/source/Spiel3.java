@@ -15,21 +15,22 @@ import java.io.IOException;
 
 public class Spiel3 extends PApplet {
 
-Camera worldCamera;
-Player Play;
-Weapon[] Waffen;
-Weapon curWeapon;
-int weapInd;
+Camera worldCamera; //Kamera
+Player Play; //Spieler
+Weapon[] Waffen; //Array mit allen Waffen
+Weapon curWeapon; //Aktuelle Waffe
+int weapInd; //Index der aktuellen Waffe, wird benötigt um wechseln zu können
 
 
 public void setup() {
     weapInd = 0;
+    //Framerate und Anti-Aliasing setzen
     frameRate(60);
     /* smooth commented out by preprocessor */;
     /* size commented out by preprocessor */;
     worldCamera = new Camera(); // Worldcamera wird genutzt, um Level größer als der Screen erstellen zu können
-    Play = new Player();
-    Waffen = new Weapon[3];
+    Play = new Player(); //Spieler instanziieren
+    Waffen = new Weapon[3]; //Arraylänge definieren
     Waffen[0] = new Weapon("Waffe",30,10,5,50);// Konstruktor -> String Name, int maxAmmo, int projSpeed, int cad
     Waffen[1] = new Weapon("Waffe2",10,20,30,60);
     Waffen[2] = new Weapon("Waffe3",5,40,70,100); 
@@ -42,9 +43,11 @@ public void draw() {
     pushMatrix();
     translate( -worldCamera.pos.x, -worldCamera.pos.y); //Worldcam verschiebt Achsen um Bewegungswert
     worldCamera.draw();
+    //Alle Waffen/Alle AKTIVEN Projektile aller Waffen rendern
     for (int i = 0; i < Waffen.length; i++) {
         Waffen[i].render();
     }
+    //Aktuelle Waffe abfeuern falls möglich
     curWeapon.shoot();
     
     //WorldCamera Ende
@@ -54,18 +57,17 @@ public void draw() {
     fill(0);
     //Zeigt Waffenname und Munition
     textSize(35);
-    
     text(curWeapon.ammo,30,40);
+    //Falls Waffe aktuell Cooldown hat (gerade geschossen wurde / nachgeladen wird) -> Name rot
     if (curWeapon.cooldown != 0) {
         fill(255,0,0);
     }
     text(curWeapon.Name,30,70);
+    
     fill(255);
     
-    Play.move();
-    
-    
-    
+    //Spieler zur Maus drehen
+    Play.move();   
 }
 
 public void mousePressed() {
@@ -90,10 +92,12 @@ public void keyPressed() {
 public void switchWeapons() {
     // Akutelle Waffe wird auf Waffe aus Array an allen Waffen gesetzt, somit können diese gewechselt werden
     if (key == 'e' && weapInd < Waffen.length - 1) {
+        curWeapon.isShooting = false;
         curWeapon = Waffen[weapInd + 1];
         weapInd++;
     }
     if (key == 'q' && weapInd > 0) {
+        curWeapon.isShooting = false;
         curWeapon = Waffen[weapInd - 1];
         weapInd--;
     }
@@ -123,12 +127,14 @@ class Player{
     int farbe;
     
     Player() {
+        //Position auf Bildschirmmitte legen und Farbe festlegen
         x = width / 2;
         y = height / 2;
-        farbe = color(255,0,0,10);
+        farbe = color(255,0,0);
     }
     
     public void render() {
+        //Spieler zeichnen, aktuelle fill Farbe speichern und später zurücksetzen
         int curcol = g.fillColor;
         fill(farbe);
         rectMode(CENTER);
@@ -138,6 +144,7 @@ class Player{
     
     
     public void move() {
+        //Spielerrechteck zur Maus hindrehen
         pushMatrix();
         angle = atan2(x - mouseX, y - mouseY);
         translate(x, y);
@@ -159,6 +166,7 @@ class Projectile{
     }
     
     public void init() {
+        //Setzt Projektil zurück, setzt auf Spielerposition und setzt Zielposition auf 0
         isActive = false;
         Pos = new PVector(width / 2,height / 2);
         Pos.x = worldCamera.pos.x + width / 2;
@@ -167,34 +175,59 @@ class Projectile{
     }
     
     public void spawn() {
+        //Wird erst zurückgesetzt
         init();
+        //Mausvektor
         PVector mouse = new PVector(worldCamera.pos.x + mouseX,worldCamera.pos.y + mouseY);
+        //Zeilvektor wird berechnet -> Verbindungsvektor von Spielerpsition zu Mausposition
         dir = PVector.sub(mouse,Pos);
+        
+        //Vektor wird normalisiert -> Alle Komponenten werden durch den selben Wert dividiert
+        //Vektorrichtung bleibt gleich aber länge wird 1
         dir.normalize();
+        //Richtungsvektor wird mit Geschwindigkeit multipliziert -> Vekor wird um Geschwindigkeitswert verlängert
         dir.mult(speed);
+        
+        //Projektil wird auf aktiv gesetzt -> Nicht mehr an Spieler fixiert, sondern kann sich nun richtung Ziel Bewegen
         isActive = true;
+        //Wird sicherheitshalber noch einmal in Position zurückgesetzt, um Fehler zu vermeiden
         Pos.x = worldCamera.pos.x + width / 2;
         Pos.y = worldCamera.pos.y + height / 2;
     }
     
     public void render() {
+        //Kreis wird mittig von Koordinaten aus gezeichnet
         ellipseMode(CENTER);
+        //Aktuell in draw genutzte Farbe wird gespeichert und später auf diesen Wert zurückgesetzt
+        //um Farbfehler zu vermeiden
         int curcol = g.fillColor;
         fill(255, 255, 0);
+        
         if (isActive) {
+            //Überprüfung, ob sich das Projektil ausserhalb des Bildschirms befindet
             checkBounds();
+            //Projektil wird um Richtungsvektor verschoben
             Pos = Pos.add(dir);
+            //Projektil wird gezeichnet
             ellipse(Pos.x,Pos.y,10,10);
         }
+        
+        //Wenn nicht aktiv, fixiert auf Spielerposition
         else{
             Pos.x = worldCamera.pos.x + width / 2;
             Pos.y = worldCamera.pos.y + height / 2;
-            ellipse(Pos.x,Pos.y,10,10);
         }
+        
+        
+        
+        
+        //Farbe wird auf vorherigen Wert zurückgesett
         fill(curcol);
     }
     
     public void checkBounds() {
+        
+        //Wenn sich das Projektil ausserhalb des Bildschirms befindet, wird es zurückgesetzt
         if (Pos.x > worldCamera.pos.x + width || Pos.x < worldCamera.pos.x) {
             init();
         }
@@ -206,22 +239,24 @@ class Projectile{
     
 }
 class Weapon{
-    String Name;
-    int ammo;
-    int maxAmmo;
-    Projectile[] Bullets;
+    String Name; //Name
+    int ammo; //Aktuelle Munition
+    int maxAmmo; //Maximale Munition
+    Projectile[] Bullets; //Array mit allen Waffeneigenen Projektilen
     boolean isShooting = false;
-    int projSpeed;
-    float cad;
-    float cooldown = 0;
-    float reloadTime;
+    int projSpeed; // Geschwindigkeit der gefeuerten Projektile
+    float cad; //Feuerrate
+    float cooldown = 0; //cooldown ziwschen Schüssen / nach Nachladen
+    float reloadTime; //Zeit zum Nachladen
     
     Weapon(String Name, int maxAmmo, int projSpeed, int cad,float reloadTime) {
         this.Name = Name;
         this.maxAmmo = maxAmmo;
         this.ammo = maxAmmo;
         this.projSpeed = projSpeed;
+        //Array mit Projektilen mit der selben Größe wie das Magazin
         Bullets = new Projectile[ammo];
+        //Alle Projektile instanziieren
         for (int i = 0; i < Bullets.length; i++) {
             Bullets[i] = new Projectile(projSpeed);
         }
@@ -231,14 +266,16 @@ class Weapon{
         
     }
     
-    public void render() {        for (int i = 0; i < Bullets.length; i++) {
+    public void render() {    
+        //Alle Projektile rendern  
+        for (int i = 0; i < Bullets.length; i++) {
             Bullets[i].render();
         } 
-        
+        //Wenn der Cooldown ziwschen Schüssen/nach dem Nachladen noch nicht 0 ist -> runterzählen
         if (cooldown > 1.0f) {
             cooldown--;
-        }  
-        
+        }
+        //Wenn der Cooldown kleiner 1 oder negativ ist -> cooldown = 0 -> um ggf Fehler zu vermeiden    
         else{
             cooldown = 0;
         }
@@ -246,9 +283,13 @@ class Weapon{
     }
     
     public void shoot() {
+        //Wenn Maus gedrückt wird und cooldown 0 ist, also geschossen werden soll UND darf
         if (isShooting && cooldown == 0) {
+            
+            //Überprüfen, ob aktuell noch ein Projektil nicht geschossen wurde und Munition übrig ist
             for (int i = 0; i < Bullets.length; i++) {
                 if (!Bullets[i].isActive && ammo != 0) {
+                    //Ungeschossenes Projektil schiessen, Munition verringern und cooldown setzen
                     Bullets[i].spawn();
                     ammo--;
                     cooldown = cad;
@@ -260,6 +301,7 @@ class Weapon{
     }
     
     public void reload() {
+        //Munition zurücksetzen und Nachladecooldown setzen
         if (key == 'r') {
             cooldown = reloadTime;
             ammo = maxAmmo;
@@ -269,7 +311,7 @@ class Weapon{
 }
 
 
-  public void settings() { size(640, 640);
+  public void settings() { size(800, 800, P2D);
 smooth(4); }
 
   static public void main(String[] passedArgs) {
