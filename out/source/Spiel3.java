@@ -34,10 +34,10 @@ public void setup() {
     /* size commented out by preprocessor */;
     worldCamera = new Camera();
     Play = new Player();
-    Waffe[] = new Weapon[3]
+    Waffen = new Weapon[3];
     Waffen[0] = new Weapon("Waffe",30,10,5);
-    Waffen[1] = new Weapon("Waffe2",10,20,20);
-    Waffen[2] = new Weapon("Waffe3",1,40,40); // Konstruktor -> String Name, int maxAmmo, int projSpeed, int cad
+    Waffen[1] = new Weapon("Waffe2",10,20,30);
+    Waffen[2] = new Weapon("Waffe3",1,40,100); // Konstruktor -> String Name, int maxAmmo, int projSpeed, int cad
     curWeapon = Waffen[weapInd];
 }
 
@@ -47,7 +47,9 @@ public void draw() {
     pushMatrix();
     translate( -worldCamera.pos.x, -worldCamera.pos.y);
     worldCamera.draw();
-    curWeapon.render();
+    for (int i = 0; i < Waffen.length; i++) {
+        Waffen[i].render();
+    }
     curWeapon.shoot();
     
     //WorldCamera Ende
@@ -74,16 +76,18 @@ public void mouseReleased() {
 }
 
 public void keyPressed() {
-    if (key == 'e' && weapInd < Waffen.length) {
+    if (key == 'e' && weapInd < Waffen.length - 1) {
         curWeapon = Waffen[weapInd + 1];
         weapInd++;
     }
     if (key == 'q' && weapInd > 0) {
-        curWeapon = Waffen[weapInd + 1];
+        curWeapon = Waffen[weapInd - 1];
         weapInd--;
     }
     
-    curWeapon.reload();
+    if (!curWeapon.isShooting) {
+        curWeapon.reload();
+    }
 }
 
 class Camera {
