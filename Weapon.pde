@@ -28,8 +28,8 @@ class Weapon{
     
     void render() {    
         //Alle Projektile rendern  
-        for (int i = 0; i < Bullets.length; i++) {
-            Bullets[i].render();
+        for (Projectile Bullet : Bullets) {
+            Bullet.render();
         } 
         //Wenn der Cooldown ziwschen Schüssen/nach dem Nachladen noch nicht 0 ist -> runterzählen
         if (cooldown > 1.0f) {
@@ -39,7 +39,6 @@ class Weapon{
         else{
             cooldown = 0;
         }
-        println(cooldown);
     }
     
     void shoot() {
@@ -47,10 +46,10 @@ class Weapon{
         if (isShooting && cooldown == 0) {
             
             //Überprüfen, ob aktuell noch ein Projektil nicht geschossen wurde und Munition übrig ist
-            for (int i = 0; i < Bullets.length; i++) {
-                if (!Bullets[i].isActive && ammo != 0) {
+            for (Projectile Bullet : Bullets) {
+                if (!Bullet.isActive && ammo != 0) {
                     //Ungeschossenes Projektil schiessen, Munition verringern und cooldown setzen
-                    Bullets[i].spawn();
+                    Bullet.spawn();
                     ammo--;
                     cooldown = cad;
                     break;
@@ -58,6 +57,12 @@ class Weapon{
             }
         }
         
+    }
+    
+    void getWalls(Wall[] Walls) {
+        for (Projectile Bullet : Bullets) {
+            Bullet.getWalls(Walls);
+        }
     }
     
     void reload() {
