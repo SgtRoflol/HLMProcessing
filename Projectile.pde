@@ -4,9 +4,11 @@ class Projectile{
     float speed;
     PVector dir;
     Wall[] Walls;
+    boolean isHostile;
     
-    Projectile(float speed) {
+    Projectile(float speed, boolean hostile) {
         this.speed = speed;
+        isHostile = hostile;
         init();
     }
     
@@ -87,5 +89,3 @@ class Projectile{
         }
     }
 }
-
-

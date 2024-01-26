@@ -5,6 +5,8 @@ Weapon curWeapon; //Aktuelle Waffe
 int weapInd; //Index der aktuellen Waffe, wird benötigt um wechseln zu können
 Wall[] Waende;
 Hud Overlay;
+Enemy[] Gegners;
+Projectile[] PlayerProj;
 
 
 void setup() {
@@ -24,14 +26,24 @@ void setup() {
     Waffen[1] = new Weapon("Waffe2",10,20,30,60);
     Waffen[2] = new Weapon("Waffe3",5,40,70,100); 
     curWeapon = Waffen[0]; // Aktuelle Waffe
+    PlayerProj = (Projectile[])concat(Waffen[0].getBullets(), Waffen[1].getBullets());
+    PlayerProj = (Projectile[])concat(PlayerProj, Waffen[2].getBullets());
+    println(PlayerProj);
+    
+    //PlayerProj = concat(PlayerProj,Waffen[2].Bullets);
     Overlay = new Hud();
     for (Weapon Waffe : Waffen) {
         Waffe.getWalls(Waende);
+    }
+    Gegners = new Enemy[15];
+    for (int i = 0; i < Gegners.length; i++) {
+        Gegners[i] = new Enemy(new PVector(i * 60, 400));
     }
 }
 
 void draw() {
     background(255);
+    
     //Alles andere muss nach der Worldcamera gezeichnet werden!
     pushMatrix();
     translate( -worldCamera.pos.x, -worldCamera.pos.y); //Worldcam verschiebt Achsen um Bewegungswert
@@ -45,8 +57,12 @@ void draw() {
     for (Wall Wand : Waende) {
         Wand.render();
     }
+    
+    for (Enemy Gegner : Gegners) {
+        Gegner.setProjectiles(PlayerProj);
+        Gegner.render();
+    }
     //WorldCamera Ende
-    rect(25,25,25,25);
     popMatrix();
     Overlay.render(); 
     fill(255);
