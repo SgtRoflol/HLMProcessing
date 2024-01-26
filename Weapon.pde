@@ -18,7 +18,7 @@ class Weapon{
         Bullets = new Projectile[ammo];
         //Alle Projektile instanziieren
         for (int i = 0; i < Bullets.length; i++) {
-            Bullets[i] = new Projectile(projSpeed);
+            Bullets[i] = new Projectile(projSpeed,false);
         }
         this.cad = cad;
         this.reloadTime = reloadTime;
@@ -73,4 +73,8 @@ class Weapon{
         }
     }
     
+    
+    Projectile[] getBullets() {
+        return Bullets;
+    }
 }
