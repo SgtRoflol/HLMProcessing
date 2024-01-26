@@ -43,19 +43,24 @@ public void setup() {
     Waffen[1] = new Weapon("Waffe2",10,20,30,60);
     Waffen[2] = new Weapon("Waffe3",5,40,70,100); 
     curWeapon = Waffen[0]; // Aktuelle Waffe
-    PlayerProj = (Projectile[])concat(Waffen[0].getBullets(), Waffen[1].getBullets());
-    PlayerProj = (Projectile[])concat(PlayerProj, Waffen[2].getBullets());
-    println(PlayerProj);
+    
+    
+    PlayerProj = new Projectile[0];
+    for (Weapon Waffe : Waffen) {
+        PlayerProj = (Projectile[])concat(PlayerProj, Waffe.getBullets());
+    }
     
     //PlayerProj = concat(PlayerProj,Waffen[2].Bullets);
     Overlay = new Hud();
     for (Weapon Waffe : Waffen) {
         Waffe.getWalls(Waende);
     }
+    
     Gegners = new Enemy[15];
     for (int i = 0; i < Gegners.length; i++) {
         Gegners[i] = new Enemy(new PVector(i * 60, 400));
     }
+    
 }
 
 public void draw() {
@@ -331,6 +336,35 @@ class Projectile{
             } 
         }
     }
+}
+class Scene{
+    Wall[] Waende;
+    Enemy[] Gegners;
+    
+    Scene() {
+        Gegners = new Enemy[15];
+        for (int i = 0; i < Gegners.length; i++) {
+            Gegners[i] = new Enemy(new PVector(i * 60, 400));
+        }
+        for (Enemy Gegner : Gegners) {
+            Gegner.setProjectiles(PlayerProj);
+        }
+        
+        Waende = new Wall[3];
+        Waende[0] = new Wall(new PVector(700,200),300,100);
+        Waende[1] = new Wall(new PVector(200,600),200,70);
+        Waende[2] = new Wall(new PVector(10,100),300,100);
+    }
+    
+    public void render() {
+        for (Wall Wand : Waende) {
+            Wand.render();
+        }
+        for (Enemy Gegner : Gegners) {
+            Gegner.render();
+        }
+    }
+    
 }
 class Wall{
     PVector Pos;
