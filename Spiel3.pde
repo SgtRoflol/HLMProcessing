@@ -3,7 +3,7 @@ Player Play; //Spieler
 Weapon curWeapon; //Aktuelle Waffe
 Scene CurScene;
 Hud Overlay;
-Projectile[] PlayerProj;
+Projectile[] PlayerProj; //Alle Spielerprojektile
 
 
 void setup() {
@@ -21,6 +21,7 @@ void setup() {
     }
     Overlay = new Hud();
     Play.getWalls(CurScene.Waende);
+    CurScene.setPlayer(Play);
     
 }
 
@@ -37,7 +38,6 @@ void draw() {
     popMatrix();
     Overlay.render(); 
     fill(255);
-    
     //Spieler zur Maus drehen
     Play.move();   
 }

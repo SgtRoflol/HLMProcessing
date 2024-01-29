@@ -2,7 +2,6 @@ class Scene{
     Wall[] Waende;
     Enemy[] Gegners;
     
-    
     Scene() {
         Waende = new Wall[3];
         Waende[0] = new Wall(new PVector(700,200),300,100);
@@ -12,6 +11,13 @@ class Scene{
         Gegners = new Enemy[15];
         for (int i = 0; i < Gegners.length; i++) {
             Gegners[i] = new Enemy(new PVector(i * 60, 400));
+            Gegners[i].getWalls(Waende);
+        }
+    }
+    
+    void setPlayer(Player Play) {
+        for (Enemy Gegner : Gegners) {
+            Gegner.setPlayer(Play);
         }
     }
     

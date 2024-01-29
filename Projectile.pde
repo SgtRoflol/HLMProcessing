@@ -5,12 +5,16 @@ class Projectile{
     PVector dir;
     Wall[] Walls;
     boolean isHostile;
+    PVector Origin;
     
-    Projectile(float speed, boolean hostile) {
+    Projectile(float speed, boolean hostile,PVector Origin) {
         this.speed = speed;
         isHostile = hostile;
+        this.Origin = Origin;
         init();
     }
+    
+    
     
     void init() {
         //Setzt Projektil zurück, setzt auf Spielerposition und setzt Zielposition auf 0
@@ -21,13 +25,13 @@ class Projectile{
         dir = new PVector(0,0);
     }
     
-    void spawn() {
+    void spawn(float x, float y) {
         
         //Wird erst zurückgesetzt
         //Mausvektor
         //Zeilvektor wird berechnet -> Verbindungsvektor von Spielerpsition zu Mausposition
         init();
-        PVector mouse = new PVector(worldCamera.pos.x + mouseX,worldCamera.pos.y + mouseY);
+        PVector mouse = new PVector(x,y);
         dir = PVector.sub(mouse,Pos);
         
         //Vektor wird normalisiert -> Alle Komponenten werden durch den selben Wert dividiert

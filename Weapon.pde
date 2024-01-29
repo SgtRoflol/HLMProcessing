@@ -8,6 +8,8 @@ class Weapon{
     float cad; //Feuerrate
     float cooldown = 0; //cooldown ziwschen Schüssen / nach Nachladen
     float reloadTime; //Zeit zum Nachladen
+    float x;
+    float y;
     
     Weapon(String Name, int maxAmmo, int projSpeed, int cad,float reloadTime) {
         this.Name = Name;
@@ -21,14 +23,18 @@ class Weapon{
             Bullets[i] = new Projectile(projSpeed,false);
         }
         this.cad = cad;
-        this.reloadTime = reloadTime;
-        
-        
+        this.reloadTime = reloadTime;  
+    }
+    
+    void setTarget(float targY,float targX) {
+        x = targY;
+        y = targX;
     }
     
     void render() {    
         //Alle Projektile rendern  
         for (Projectile Bullet : Bullets) {
+            
             Bullet.render();
         } 
         //Wenn der Cooldown ziwschen Schüssen/nach dem Nachladen noch nicht 0 ist -> runterzählen
@@ -49,7 +55,7 @@ class Weapon{
             for (Projectile Bullet : Bullets) {
                 if (!Bullet.isActive && ammo != 0) {
                     //Ungeschossenes Projektil schiessen, Munition verringern und cooldown setzen
-                    Bullet.spawn();
+                    Bullet.spawn(x,y);
                     ammo--;
                     cooldown = cad;
                     break;
