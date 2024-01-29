@@ -6,7 +6,6 @@ class Enemy{
     Wall[] Waende;
     Player Play;
     
-    
     Enemy(PVector Pos) {
         this.Pos = Pos;
         isAlive = true;
@@ -28,16 +27,16 @@ class Enemy{
             fill(0,0,255);
             ellipse(Pos.x,Pos.y,size,size);
             if (isOnScreen() && !canSee()) {
-                line(Pos.x,Pos.y,width / 2 + worldCamera.pos.x,height / 2 + worldCamera.pos.y);
+                line(Pos.x,Pos.y,width / 2 + worldCamera.Pos.x,height / 2 + worldCamera.Pos.y);
             }
         }
     }
     
     boolean isOnScreen() {
-        if (Pos.x > worldCamera.pos.x + width + size || Pos.x + size < worldCamera.pos.x) {
+        if (Pos.x > worldCamera.Pos.x + width + size || Pos.x + size < worldCamera.Pos.x) {
             return false;
         }   
-        if (Pos.y > worldCamera.pos.y + height + size || Pos.y + size < worldCamera.pos.y) {
+        if (Pos.y > worldCamera.Pos.y + height + size || Pos.y + size < worldCamera.Pos.y) {
             return false;
         }
         
@@ -61,7 +60,7 @@ class Enemy{
     
     boolean canSee() {
         for (Wall Wand : Waende) {
-            if (lineRect(width / 2 + worldCamera.pos.x,height / 2 + worldCamera.pos.y,Pos.x,Pos.y,Wand.Pos.x,Wand.Pos.y,Wand.w,Wand.h)) {
+            if (lineRect(width / 2 + worldCamera.Pos.x,height / 2 + worldCamera.Pos.y,Pos.x,Pos.y,Wand.Pos.x,Wand.Pos.y,Wand.w,Wand.h)) {
                 return true;
             }
         }

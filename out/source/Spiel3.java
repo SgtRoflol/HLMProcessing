@@ -30,14 +30,13 @@ public void setup() {
     frameRate(60);
     CurScene = new Scene();
     worldCamera = new Camera(); // Worldcamera wird genutzt, um Level größer als der Screen erstellen zu können
-    Play = new Player(); //Spieler instanziieren
+    Play = new Player(CurScene.getWalls()); //Spieler instanziieren
     curWeapon = Play.Waffen[0]; // Aktuelle Waffe
     PlayerProj = new Projectile[0];
     for (Weapon Waffe : Play.Waffen) {
         PlayerProj = (Projectile[])concat(PlayerProj, Waffe.getBullets());
     }
     Overlay = new Hud();
-    Play.getWalls(CurScene.Waende);
     CurScene.setPlayer(Play);
     
 }
@@ -46,11 +45,11 @@ public void draw() {
     background(255);
     //Alles andere muss nach der Worldcamera gezeichnet werden!
     pushMatrix();
-    translate( -worldCamera.pos.x, -worldCamera.pos.y); //Worldcam verschiebt Achsen um Bewegungswert
+    translate( -worldCamera.Pos.x, -worldCamera.Pos.y); //Worldcam verschiebt Achsen um Bewegungswert
     worldCamera.draw();
-    CurScene.render();
     Play.renderWeapons();
     curWeapon.shoot();
+    CurScene.render();
     //WorldCamera Ende
     popMatrix();
     Overlay.render(); 
@@ -80,20 +79,20 @@ public void keyPressed() {
 
 class Camera {
     int shiftdist;
-    PVector pos;
+    PVector Pos;
     
     
     Camera() {
-        pos = new PVector(0, 0);
+        Pos = new PVector(0, 0);
         shiftdist = 20;
     }
     
     public void draw() {
         if (keyPressed) {
-            if (key == 'w') {if (!Play.getCollision(new PVector(pos.x,pos.y - 5))) {pos.y -= 5;} } 
-            if (key == 's') {if (!Play.getCollision(new PVector(pos.x,pos.y + 5))) {pos.y += 5;} } 
-            if (key == 'a') {if (!Play.getCollision(new PVector(pos.x - 5,pos.y))) {pos.x -= 5;} } 
-            if (key == 'd') {if (!Play.getCollision(new PVector(pos.x + 5,pos.y))) {pos.x += 5;} } 
+            if (key == 'w') {if (!Play.getCollision(new PVector(Pos.x,Pos.y - 5))) {Pos.y -= 5;} } 
+            if (key == 's') {if (!Play.getCollision(new PVector(Pos.x,Pos.y + 5))) {Pos.y += 5;} } 
+            if (key == 'a') {if (!Play.getCollision(new PVector(Pos.x - 5,Pos.y))) {Pos.x -= 5;} } 
+            if (key == 'd') {if (!Play.getCollision(new PVector(Pos.x + 5,Pos.y))) {Pos.x += 5;} } 
             
         }
     }
@@ -106,7 +105,6 @@ class Enemy{
     int size;
     Wall[] Waende;
     Player Play;
-    
     
     Enemy(PVector Pos) {
         this.Pos = Pos;
@@ -129,16 +127,16 @@ class Enemy{
             fill(0,0,255);
             ellipse(Pos.x,Pos.y,size,size);
             if (isOnScreen() && !canSee()) {
-                line(Pos.x,Pos.y,width / 2 + worldCamera.pos.x,height / 2 + worldCamera.pos.y);
+                line(Pos.x,Pos.y,width / 2 + worldCamera.Pos.x,height / 2 + worldCamera.Pos.y);
             }
         }
     }
     
     public boolean isOnScreen() {
-        if (Pos.x > worldCamera.pos.x + width + size || Pos.x + size < worldCamera.pos.x) {
+        if (Pos.x > worldCamera.Pos.x + width + size || Pos.x + size < worldCamera.Pos.x) {
             return false;
         }   
-        if (Pos.y > worldCamera.pos.y + height + size || Pos.y + size < worldCamera.pos.y) {
+        if (Pos.y > worldCamera.Pos.y + height + size || Pos.y + size < worldCamera.Pos.y) {
             return false;
         }
         
@@ -162,7 +160,7 @@ class Enemy{
     
     public boolean canSee() {
         for (Wall Wand : Waende) {
-            if (lineRect(width / 2 + worldCamera.pos.x,height / 2 + worldCamera.pos.y,Pos.x,Pos.y,Wand.Pos.x,Wand.Pos.y,Wand.w,Wand.h)) {
+            if (lineRect(width / 2 + worldCamera.Pos.x,height / 2 + worldCamera.Pos.y,Pos.x,Pos.y,Wand.Pos.x,Wand.Pos.y,Wand.w,Wand.h)) {
                 return true;
             }
         }
@@ -235,18 +233,19 @@ class Player{
     Wall[] Waende;
     Weapon[] Waffen; //Array mit allen Waffen
     
-    Player() {
+    Player(Wall[] Waende) {
         //Position auf Bildschirmmitte legen und Farbe festlegen
         x = width / 2;
         y = height / 2;
+        Origin = new PVector(worldCamera.Pos.x + height / 2,worldCamera.Pos.y + height / 2);    
         farbe = color(255,0,0);
         size = 50;
-        Origin = new PVector(worldCamera.pos.x + height / 2,worldCamera.pos.y + height / 2);           
+        this.Waende = Waende;
         
         Waffen = new Weapon[3]; //Arraylänge definieren
-        Waffen[0] = new Weapon("Waffe",30,10,5,50);// Konstruktor -> String Name, int maxAmmo, int projSpeed, int cad
-        Waffen[1] = new Weapon("Waffe2",10,20,30,60);
-        Waffen[2] = new Weapon("Waffe3",5,40,70,100); 
+        Waffen[0] = new Weapon("Waffe",30,10,5,50,Origin,false,CurScene.getWalls());// Konstruktor -> String Name, int maxAmmo, int projSpeed, int cad
+        Waffen[1] = new Weapon("Waffe2",10,20,30,60,Origin,false,CurScene.getWalls());
+        Waffen[2] = new Weapon("Waffe3",5,40,70,100,Origin,false,CurScene.getWalls()); 
     }
     
     
@@ -257,14 +256,17 @@ class Player{
         rectMode(CENTER);
         rect(0,0,size,size);
         fill(curcol);
-        println(getCollision(worldCamera.pos));
+        println(getCollision(worldCamera.Pos));
+        for (Weapon Waffe : Waffen) {
+            Waffe.Origin = new PVector(worldCamera.Pos.x + height / 2,worldCamera.Pos.y + height / 2);
+        }
         
     }
     
     public void renderWeapons() {
         for (Weapon Waffe : Waffen) {
             Waffe.render();
-            Waffe.setTarget(worldCamera.pos.x + mouseX,worldCamera.pos.y + mouseY);
+            Waffe.setTarget(worldCamera.Pos.x + mouseX,worldCamera.Pos.y + mouseY);
             
         }
     }
@@ -279,12 +281,6 @@ class Player{
         popMatrix();
     }
     
-    public void getWalls(Wall[] Waende) {
-        for (Weapon Waffe : Waffen) {
-            Waffe.getWalls(Waende);
-        }
-        this.Waende = Waende;
-    }
     
     public void switchWeapons() {
         // Akutelle Waffe wird auf Waffe aus Array an allen Waffen gesetzt, somit können diese gewechselt werden
@@ -336,95 +332,69 @@ class Projectile{
     PVector dir;
     Wall[] Walls;
     boolean isHostile;
+    PVector Origin;
     
-    Projectile(float speed, boolean hostile) {
+    Projectile(float speed, boolean hostile, PVector Origin, Wall[] Walls) {
         this.speed = speed;
         isHostile = hostile;
+        this.Origin = Origin;
+        this.Walls = Walls;
+        Pos = new PVector();
+        dir = new PVector();
         init();
     }
     
-    public PVector getOrigin() {
-        PVector Origin;
-        Origin.x = worldCamera.pos.x + height / 2;
-        Origin.y = worldCamera.pos.y + height / 2;
-        return Origin;
-    }
     
     public void init() {
-        //Setzt Projektil zurück, setzt auf Spielerposition und setzt Zielposition auf 0
         isActive = false;
-        Pos = new PVector(width / 2,height / 2);
         Pos = Origin;
-        dir = new PVector(0,0);
     }
     
-    voidspawn(float x, float y) {
-        
-        //Wird erst zurückgesetzt
-        //Mausvektor
-        //Zeilvektor wird berechnet -> Verbindungsvektor von Spielerpsition zu Mausposition
+    public void spawn(float x, float y) {
         init();
-        PVector mouse = new PVector(x,y);
-        dir = PVector.sub(mouse,Pos);
-        
-        //Vektor wird normalisiert -> Alle Komponenten werden durch den selben Wert dividiert
-        //Vektorrichtung bleibt gleich aber länge wird 1
-        //Richtungsvektor wird mit Geschwindigkeit multipliziert -> Vekor wird um Geschwindigkeitswert verlängert
-        //Projektil wird auf aktiv gesetzt -> Nicht mehr an Spieler fixiert, sondern kann sich nun richtung Ziel Bewegen
+        PVector Target = new PVector(x,y);
+        dir = PVector.sub(Target,Pos);
         dir.normalize();
         dir.mult(speed);
         isActive = true;
     }
     
-    voidrender() {
-        //Kreis wird mittig von Koordinaten aus gezeichnet
-        //Aktuell in draw genutzte Farbe wird gespeichert und später auf diesen Wert zurückgesetzt
-        //umFarbfehler zu vermeiden
+    public void render() {
         ellipseMode(CENTER);
         int curcol = g.fillColor;
         fill(255, 255, 0);
         
-        if (isActive) {
-            //Überprüfung, ob sich das Projektil ausserhalb des Bildschirms befindet
-            //Projektil wird um Richtungsvektor verschoben
-            //Projektil wird gezeichnet
-            checkBounds();
-            collision();
-            Pos = Pos.add(dir);
-            ellipse(Pos.x,Pos.y,10,10);   
+        if (checkCollision()) {
+            isActive = false;
         }
-        //Wenn nicht aktiv, fixiert auf Spielerposition
         else{
-            Pos.x = worldCamera.pos.x + width / 2;
-            Pos.y = worldCamera.pos.y + height / 2;
-        }   
-        //Farbe wird auf vorherigen Wert zurückgesett
-        fill(curcol);
-    }
+            if (isActive) {
+                Pos = Pos.add(dir);
+                ellipse(Pos.x,Pos.y,10,10);   
+            } 
+            //Farbe wird auf vorherigen Wert zurückgesett
+            fill(curcol);
+    } }
     
-    voidcheckBounds() {
-        
-        //Wenn sich das Projektil ausserhalb des Bildschirms befindet, wird es zurückgesetzt
-        if (Pos.x > worldCamera.pos.x + width || Pos.x < worldCamera.pos.x) {
-            init();
-        }   
-        if (Pos.y > worldCamera.pos.y + height || Pos.y < worldCamera.pos.y) {
-            init();
+    public boolean checkCollision() {
+        //Wenn das Projektil ausserhalb des Bildschirms ist
+        if (Pos.x > worldCamera.Pos.x + width || Pos.x < worldCamera.Pos.x) {
+            return true;
+        }    
+        if (Pos.y > worldCamera.Pos.y + height || Pos.y < worldCamera.Pos.y) {
+            return true;
         }
-    }
-    
-    voidgetWalls(Wall[] Walls) {
-        this.Walls = Walls;
-    }
-    
-    voidcollision() {
+        
+        //Wenn das Projektil eine Wand trifft
         for (Wall Wall : Walls) {
-            if (Pos.x >= Wall.Pos.x && Pos.x <= Wall.Pos.x + Wall.w && 
-                Pos.y >= Wall.Pos.y && Pos.y <= Wall.Pos.y + Wall.h) {
-                init();
+            if (Pos.x + dir.x >= Wall.Pos.x && Pos.x + dir.x <= Wall.Pos.x + Wall.w && 
+                Pos.y + dir.y >= Wall.Pos.y && Pos.y + dir.y <= Wall.Pos.y + Wall.h) {
+                return true;
             } 
         }
+        return false;
     }
+    
 }
 class Scene{
     Wall[] Waende;
@@ -458,6 +428,10 @@ class Scene{
             Gegner.setProjectiles(PlayerProj);
             Gegner.render();
         }
+    }
+    
+    public Wall[] getWalls() {
+        return this.Waende;
     }
 }
 class Wall{
@@ -493,10 +467,12 @@ class Weapon{
     float cad; //Feuerrate
     float cooldown = 0; //cooldown ziwschen Schüssen / nach Nachladen
     float reloadTime; //Zeit zum Nachladen
-    float x;
-    float y;
+    float targX;
+    float targY;
+    PVector Origin;
     
-    Weapon(String Name, int maxAmmo, int projSpeed, int cad,float reloadTime) {
+    Weapon(String Name, int maxAmmo, int projSpeed, int cad,float reloadTime, PVector Origin, boolean isHostile, Wall[] Walls) {
+        this.Origin = Origin;
         this.Name = Name;
         this.maxAmmo = maxAmmo;
         this.ammo = maxAmmo;
@@ -505,20 +481,21 @@ class Weapon{
         Bullets = new Projectile[ammo];
         //Alle Projektile instanziieren
         for (int i = 0; i < Bullets.length; i++) {
-            Bullets[i] = new Projectile(projSpeed,false);
+            Bullets[i] = new Projectile(projSpeed,isHostile,Origin,Walls);
         }
         this.cad = cad;
         this.reloadTime = reloadTime;  
     }
     
     public void setTarget(float targY,float targX) {
-        x = targY;
-        y = targX;
+        this.targX = targY;
+        this.targY = targX;
     }
     
     public void render() {    
         //Alle Projektile rendern  
         for (Projectile Bullet : Bullets) {
+            Bullet.Origin = Origin;
             Bullet.render();
         } 
         //Wenn der Cooldown ziwschen Schüssen/nach dem Nachladen noch nicht 0 ist -> runterzählen
@@ -533,26 +510,20 @@ class Weapon{
     
     public void shoot() {
         //Wenn Maus gedrückt wird und cooldown 0 ist, also geschossen werden soll UND darf
-        if (isShooting && cooldown == 0) {
-            
+        if (isShooting && cooldown == 0 && ammo != 0) {
             //Überprüfen, ob aktuell noch ein Projektil nicht geschossen wurde und Munition übrig ist
             for (Projectile Bullet : Bullets) {
-                if (!Bullet.isActive && ammo != 0) {
+                if (!Bullet.isActive) {
                     //Ungeschossenes Projektil schiessen, Munition verringern und cooldown setzen
-                    Bullet.spawn(x,y);
+                    Bullet.spawn(targX,targY);
                     ammo--;
                     cooldown = cad;
                     break;
                 }
+                
             }
         }
         
-    }
-    
-    public void getWalls(Wall[] Walls) {
-        for (Projectile Bullet : Bullets) {
-            Bullet.getWalls(Walls);
-        }
     }
     
     public void reload() {

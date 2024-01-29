@@ -13,14 +13,13 @@ void setup() {
     frameRate(60);
     CurScene = new Scene();
     worldCamera = new Camera(); // Worldcamera wird genutzt, um Level größer als der Screen erstellen zu können
-    Play = new Player(); //Spieler instanziieren
+    Play = new Player(CurScene.getWalls()); //Spieler instanziieren
     curWeapon = Play.Waffen[0]; // Aktuelle Waffe
     PlayerProj = new Projectile[0];
     for (Weapon Waffe : Play.Waffen) {
         PlayerProj = (Projectile[])concat(PlayerProj, Waffe.getBullets());
     }
     Overlay = new Hud();
-    Play.getWalls(CurScene.Waende);
     CurScene.setPlayer(Play);
     
 }
@@ -29,11 +28,11 @@ void draw() {
     background(255);
     //Alles andere muss nach der Worldcamera gezeichnet werden!
     pushMatrix();
-    translate( -worldCamera.pos.x, -worldCamera.pos.y); //Worldcam verschiebt Achsen um Bewegungswert
+    translate( -worldCamera.Pos.x, -worldCamera.Pos.y); //Worldcam verschiebt Achsen um Bewegungswert
     worldCamera.draw();
-    CurScene.render();
     Play.renderWeapons();
     curWeapon.shoot();
+    CurScene.render();
     //WorldCamera Ende
     popMatrix();
     Overlay.render(); 

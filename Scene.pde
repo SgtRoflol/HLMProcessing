@@ -31,4 +31,8 @@ class Scene{
             Gegner.render();
         }
     }
+    
+    Wall[] getWalls() {
+        return this.Waende;
+    }
 }

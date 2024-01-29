@@ -5,23 +5,23 @@ class Player{
     color farbe;
     int weapInd = 0;
     int size;
-    Wall closestWall;
     PVector Origin;
     Wall[] Waende;
     Weapon[] Waffen; //Array mit allen Waffen
     
-    Player() {
+    Player(Wall[] Waende) {
         //Position auf Bildschirmmitte legen und Farbe festlegen
         x = width / 2;
         y = height / 2;
+        Origin = new PVector(worldCamera.Pos.x + height / 2,worldCamera.Pos.y + height / 2);    
         farbe = color(255,0,0);
         size = 50;
-        Origin = new PVector(worldCamera.pos.x + height / 2,worldCamera.pos.y + height / 2);           
+        this.Waende = Waende;
         
         Waffen = new Weapon[3]; //Arraylänge definieren
-        Waffen[0] = new Weapon("Waffe",30,10,5,50);// Konstruktor -> String Name, int maxAmmo, int projSpeed, int cad
-        Waffen[1] = new Weapon("Waffe2",10,20,30,60);
-        Waffen[2] = new Weapon("Waffe3",5,40,70,100); 
+        Waffen[0] = new Weapon("Waffe",30,10,5,50,Origin,false,CurScene.getWalls());// Konstruktor -> String Name, int maxAmmo, int projSpeed, int cad
+        Waffen[1] = new Weapon("Waffe2",10,20,30,60,Origin,false,CurScene.getWalls());
+        Waffen[2] = new Weapon("Waffe3",5,40,70,100,Origin,false,CurScene.getWalls()); 
     }
     
     
@@ -32,14 +32,17 @@ class Player{
         rectMode(CENTER);
         rect(0,0,size,size);
         fill(curcol);
-        println(getCollision(worldCamera.pos));
+        println(getCollision(worldCamera.Pos));
+        for (Weapon Waffe : Waffen) {
+            Waffe.Origin = new PVector(worldCamera.Pos.x + height / 2,worldCamera.Pos.y + height / 2);
+        }
         
     }
     
     void renderWeapons() {
         for (Weapon Waffe : Waffen) {
             Waffe.render();
-            Waffe.setTarget(worldCamera.pos.x + mouseX,worldCamera.pos.y + mouseY);
+            Waffe.setTarget(worldCamera.Pos.x + mouseX,worldCamera.Pos.y + mouseY);
             
         }
     }
@@ -54,12 +57,6 @@ class Player{
         popMatrix();
     }
     
-    void getWalls(Wall[] Waende) {
-        for (Weapon Waffe : Waffen) {
-            Waffe.getWalls(Waende);
-        }
-        this.Waende = Waende;
-    }
     
     void switchWeapons() {
         // Akutelle Waffe wird auf Waffe aus Array an allen Waffen gesetzt, somit können diese gewechselt werden
@@ -96,7 +93,6 @@ class Player{
             for (Wall Wall : Waende) {
                 if (x + Pos.x + size / 2 >= Wall.Pos.x && x + Pos.x - size / 2 <= Wall.Pos.x + Wall.w && 
                     y + Pos.y + size / 2 >= Wall.Pos.y && y + Pos.y - size / 2 <= Wall.Pos.y + Wall.h) {
-                    closestWall = Wand;
                     return true;
                 } 
             }

@@ -7,89 +7,65 @@ class Projectile{
     boolean isHostile;
     PVector Origin;
     
-    Projectile(float speed, boolean hostile,PVector Origin) {
+    Projectile(float speed, boolean hostile, PVector Origin, Wall[] Walls) {
         this.speed = speed;
         isHostile = hostile;
         this.Origin = Origin;
+        this.Walls = Walls;
+        Pos = new PVector();
+        dir = new PVector();
         init();
     }
-    
     
     
     void init() {
-        //Setzt Projektil zurück, setzt auf Spielerposition und setzt Zielposition auf 0
         isActive = false;
-        Pos = new PVector(width / 2,height / 2);
-        Pos.x = worldCamera.pos.x + width / 2;
-        Pos.y = worldCamera.pos.y + height / 2;
-        dir = new PVector(0,0);
+        Pos = Origin;
     }
     
     void spawn(float x, float y) {
-        
-        //Wird erst zurückgesetzt
-        //Mausvektor
-        //Zeilvektor wird berechnet -> Verbindungsvektor von Spielerpsition zu Mausposition
         init();
-        PVector mouse = new PVector(x,y);
-        dir = PVector.sub(mouse,Pos);
-        
-        //Vektor wird normalisiert -> Alle Komponenten werden durch den selben Wert dividiert
-        //Vektorrichtung bleibt gleich aber länge wird 1
-        //Richtungsvektor wird mit Geschwindigkeit multipliziert -> Vekor wird um Geschwindigkeitswert verlängert
-        //Projektil wird auf aktiv gesetzt -> Nicht mehr an Spieler fixiert, sondern kann sich nun richtung Ziel Bewegen
+        PVector Target = new PVector(x,y);
+        dir = PVector.sub(Target,Pos);
         dir.normalize();
         dir.mult(speed);
         isActive = true;
     }
     
     void render() {
-        //Kreis wird mittig von Koordinaten aus gezeichnet
-        //Aktuell in draw genutzte Farbe wird gespeichert und später auf diesen Wert zurückgesetzt
-        //um Farbfehler zu vermeiden
         ellipseMode(CENTER);
         color curcol = g.fillColor;
         fill(255, 255, 0);
         
-        if (isActive) {
-            //Überprüfung, ob sich das Projektil ausserhalb des Bildschirms befindet
-            //Projektil wird um Richtungsvektor verschoben
-            //Projektil wird gezeichnet
-            checkBounds();
-            collision();
-            Pos = Pos.add(dir);
-            ellipse(Pos.x,Pos.y,10,10);   
+        if (checkCollision()) {
+            isActive = false;
         }
-        //Wenn nicht aktiv, fixiert auf Spielerposition
         else{
-            Pos.x = worldCamera.pos.x + width / 2;
-            Pos.y = worldCamera.pos.y + height / 2;
-        }   
-        //Farbe wird auf vorherigen Wert zurückgesett
-        fill(curcol);
-    }
+            if (isActive) {
+                Pos = Pos.add(dir);
+                ellipse(Pos.x,Pos.y,10,10);   
+            } 
+            //Farbe wird auf vorherigen Wert zurückgesett
+            fill(curcol);
+    } }
     
-    void checkBounds() {
-        
-        //Wenn sich das Projektil ausserhalb des Bildschirms befindet, wird es zurückgesetzt
-        if (Pos.x > worldCamera.pos.x + width || Pos.x < worldCamera.pos.x) {
-            init();
+    boolean checkCollision() {
+        //Wenn das Projektil ausserhalb des Bildschirms ist
+        if (Pos.x > worldCamera.Pos.x + width || Pos.x < worldCamera.Pos.x) {
+            return true;
         }    
-        if (Pos.y > worldCamera.pos.y + height || Pos.y < worldCamera.pos.y) {
-            init();
+        if (Pos.y > worldCamera.Pos.y + height || Pos.y < worldCamera.Pos.y) {
+            return true;
         }
-    }
-    
-    void getWalls(Wall[] Walls) {
-        this.Walls = Walls;
-    }
-    
-    void collision() {
+        
+        //Wenn das Projektil eine Wand trifft
         for (Wall Wall : Walls) {
-            if (Pos.x >= Wall.Pos.x && Pos.x <= Wall.Pos.x + Wall.w && 
-                Pos.y >= Wall.Pos.y && Pos.y <= Wall.Pos.y + Wall.h) {
-                init();
+            if (Pos.x + dir.x >= Wall.Pos.x && Pos.x + dir.x <= Wall.Pos.x + Wall.w && 
+                Pos.y + dir.y >= Wall.Pos.y && Pos.y + dir.y <= Wall.Pos.y + Wall.h) {
+                return true;
             } 
         }
+        return false;
     }
+    
 }
