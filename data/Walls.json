@@ -1,0 +1,26 @@
+[
+    {
+        "PosX": 700,
+        "PosY": 200,
+        "Width": 300,
+        "Height": 100
+    },
+    {
+        "PosX": 200,
+        "PosY": 600,
+        "Width": 200,
+        "Height": 70
+    },
+    {
+        "PosX": 10,
+        "PosY": 100,
+        "Width": 300,
+        "Height": 100
+    },
+    {
+        "PosX": 1000,
+        "PosY": 400,
+        "Width": 500,
+        "Height": 200
+    }
+]

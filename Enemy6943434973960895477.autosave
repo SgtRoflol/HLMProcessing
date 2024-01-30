@@ -1,6 +1,6 @@
 class Enemy{
     boolean isAlive;
-    PVector Pos;
+    PVector EnPos;
     Projectile[] PlayerProj;
     int size;
     Wall[] Waende;
@@ -13,10 +13,7 @@ class Enemy{
         size = 50;
         this.Play = Play;
         getWalls(Walls);
-        //Konstruktor -> String Name, int maxAmmo, int projSpeed, 
-        //int cad,float reloadTime, PVector Origin, boolean isHostile, Wall[] Walls
-        Waffe = new Weapon("Waffe",100,10,20,0,new PVector(Pos.x,Pos.y),true,Waende);
-        Waffe.cooldown = 40;
+        Waffe = new Weapon("Waffe",100,10,50,0,Pos,true,Waende);
     }
     
     void getWalls(Wall[] Walls) {
@@ -36,15 +33,10 @@ class Enemy{
                 Waffe.setTarget(width / 2 + worldCamera.Pos.x,height / 2 + worldCamera.Pos.y);
                 Waffe.isShooting = true;
                 Waffe.shoot();
+                Waffe.render();
                 line(Pos.x,Pos.y,width / 2 + worldCamera.Pos.x,height / 2 + worldCamera.Pos.y);
             }
-            else{
-                Waffe.cooldown = 30;
-            }
         }
-        
-        Waffe.render();
-        
     }
     
     boolean isOnScreen() {

@@ -11,7 +11,7 @@ void setup() {
     //Framerate und Anti-Aliasing setzen
     smooth(4);
     frameRate(60);
-    CurScene = new Scene();
+    CurScene = new Scene("Walls.json","Enemies.json");
     worldCamera = new Camera(); // Worldcamera wird genutzt, um Level größer als der Screen erstellen zu können
     Play = new Player(CurScene.getWalls()); //Spieler instanziieren
     curWeapon = Play.Waffen[0]; // Aktuelle Waffe

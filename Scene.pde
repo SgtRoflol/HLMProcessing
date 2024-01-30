@@ -2,17 +2,41 @@ class Scene{
     Wall[] Waende;
     Enemy[] Gegners;
     
-    Scene() {
-        Waende = new Wall[3];
-        Waende[0] = new Wall(new PVector(700,200),300,100);
-        Waende[1] = new Wall(new PVector(200,600),200,70);
-        Waende[2] = new Wall(new PVector(10,100),300,100);
-        
-        Gegners = new Enemy[15];
-        for (int i = 0; i < Gegners.length; i++) {
-            Gegners[i] = new Enemy(new PVector(i * 60, 400));
-            Gegners[i].getWalls(Waende);
+    Scene(String FileNameWalls,String FileNameEnemies) {
+        loadWalls(FileNameWalls);
+        loadEnemies(FileNameEnemies);
+    }
+    
+    void loadWalls(String FileName) {
+        JSONArray values = loadJSONArray(FileName);
+        Waende = new Wall[values.size()];
+        for (int i = 0; i < values.size(); i++) {
+            
+            JSONObject Wand = values.getJSONObject(i); 
+            
+            int PosX = Wand.getInt("PosX");
+            int PosY = Wand.getInt("PosY");
+            int Width = Wand.getInt("Width");
+            int Height = Wand.getInt("Height");
+            
+            Waende[i] = new Wall(new PVector(PosX,PosY),Width,Height);   
         }
+        
+    }
+    
+    void loadEnemies(String FileName) {
+        JSONArray values = loadJSONArray(FileName);
+        Gegners = new Enemy[values.size()];
+        
+        for (int i = 0;i < values.size(); i++) {
+            
+            JSONObject Gegner = values.getJSONObject(i);
+            int PosX = Gegner.getInt("PosX");
+            int PosY = Gegner.getInt("PosY");
+            
+            Gegners[i] = new Enemy(new PVector(PosX,PosY),Waende);
+        }
+        
     }
     
     void setPlayer(Player Play) {

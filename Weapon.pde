@@ -22,7 +22,7 @@ class Weapon{
         Bullets = new Projectile[ammo];
         //Alle Projektile instanziieren
         for (int i = 0; i < Bullets.length; i++) {
-            Bullets[i] = new Projectile(projSpeed,isHostile,Origin,Walls);
+            Bullets[i] = new Projectile(projSpeed,isHostile,new PVector(Origin.x,Origin.y),Walls);
         }
         this.cad = cad;
         this.reloadTime = reloadTime;  
@@ -36,8 +36,9 @@ class Weapon{
     void render() {    
         //Alle Projektile rendern  
         for (Projectile Bullet : Bullets) {
-            Bullet.Origin = Origin;
+            Bullet.Origin = new PVector(Origin.x,Origin.y);
             Bullet.render();
+            println(Origin);
         } 
         //Wenn der Cooldown ziwschen Schüssen/nach dem Nachladen noch nicht 0 ist -> runterzählen
         if (cooldown > 1.0f) {

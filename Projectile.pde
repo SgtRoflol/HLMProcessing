@@ -25,6 +25,8 @@ class Projectile{
     
     void spawn(float x, float y) {
         init();
+        //Normalisierter Differenzvektor zwischen Position und Ziel wird als
+        //Richtung definiert
         PVector Target = new PVector(x,y);
         dir = PVector.sub(Target,Pos);
         dir.normalize();
@@ -37,11 +39,12 @@ class Projectile{
         color curcol = g.fillColor;
         fill(255, 255, 0);
         
-        if (checkCollision()) {
-            isActive = false;
-        }
-        else{
-            if (isActive) {
+        if (isActive) {       
+            if (checkCollision()) {
+                isActive = false;
+            }
+            else{
+                // Projektil wird in Richtung Ziel verschoben
                 Pos = Pos.add(dir);
                 ellipse(Pos.x,Pos.y,10,10);   
             } 
