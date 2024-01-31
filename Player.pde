@@ -8,9 +8,12 @@ class Player{
     PVector Origin;
     Wall[] Waende;
     Weapon[] Waffen; //Array mit allen Waffen
+    int hp;
+    Projectile[] EnemyProj;
     
     Player(Wall[] Waende) {
         //Position auf Bildschirmmitte legen und Farbe festlegen
+        hp = 100;
         x = width / 2;
         y = height / 2;
         Origin = new PVector(worldCamera.Pos.x + height / 2,worldCamera.Pos.y + height / 2);    
@@ -27,6 +30,10 @@ class Player{
     
     void render() {
         //Spieler zeichnen, aktuelle fill Farbe speichern und später zurücksetzen
+        if (hp <= 0) {
+            farbe = (color(0));
+        }
+        checkHit();
         color curcol = g.fillColor;
         fill(farbe);
         rectMode(CENTER);
@@ -34,7 +41,7 @@ class Player{
         fill(curcol);
         println(getCollision(worldCamera.Pos));
         for (Weapon Waffe : Waffen) {
-            Waffe.Origin = new PVector(worldCamera.Pos.x + height / 2,worldCamera.Pos.y + height / 2);
+            Waffe.Origin = new PVector(worldCamera.Pos.x + width / 2,worldCamera.Pos.y + height / 2);
         }
         
     }
@@ -42,12 +49,11 @@ class Player{
     void renderWeapons() {
         for (Weapon Waffe : Waffen) {
             Waffe.render();
-            Waffe.setTarget(worldCamera.Pos.x + mouseX,worldCamera.Pos.y + mouseY);
-            
+            Waffe.setTarget(worldCamera.Pos.x + mouseX,worldCamera.Pos.y + mouseY);     
         }
     }
     
-    void move() {
+    void rot() {
         //Spielerrechteck zur Maus hindrehen
         pushMatrix();
         angle = atan2(x - mouseX, y - mouseY);
@@ -56,6 +62,7 @@ class Player{
         render();
         popMatrix();
     }
+    
     
     
     void switchWeapons() {
@@ -98,5 +105,25 @@ class Player{
             }
         }
         return false;
+    }
+    
+    
+    void setProjectiles(Projectile[] Bullets) {
+        EnemyProj = Bullets;
+    }
+    
+    void checkHit() {
+        for (Projectile Bullet : EnemyProj) {
+            if (!Bullet.isActive) {
+                continue;
+            }
+            float disX = worldCamera.Pos.x + width / 2 - Bullet.Pos.x;
+            float disY = worldCamera.Pos.y + height / 2 - Bullet.Pos.y;
+            if (sqrt(sq(disX) + sq(disY)) < size / 2 && Bullet.isActive) {
+                hp = hp - 10;
+                println("AUA");
+                Bullet.init();
+            }
+        }
     }
 }

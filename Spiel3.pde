@@ -4,6 +4,7 @@ Weapon curWeapon; //Aktuelle Waffe
 Scene CurScene;
 Hud Overlay;
 Projectile[] PlayerProj; //Alle Spielerprojektile
+Projectile[] EnemyProj;
 
 
 void setup() {
@@ -19,6 +20,12 @@ void setup() {
     for (Weapon Waffe : Play.Waffen) {
         PlayerProj = (Projectile[])concat(PlayerProj, Waffe.getBullets());
     }
+    EnemyProj = new Projectile[0];
+    for (Enemy Gegner : CurScene.Gegners) {
+        EnemyProj = (Projectile[])concat(EnemyProj, Gegner.Waffe.getBullets());
+    }
+    
+    Play.setProjectiles(EnemyProj);
     Overlay = new Hud();
     CurScene.setPlayer(Play);
     
@@ -38,7 +45,8 @@ void draw() {
     Overlay.render(); 
     fill(255);
     //Spieler zur Maus drehen
-    Play.move();   
+    Play.rot();   
+    println(frameRate);
 }
 
 void mousePressed() {
@@ -54,8 +62,14 @@ void keyPressed() {
     Play.switchWeapons();
     
     //Es kann nur nachgeladen werden, wenn geschossen wird, ausserdem kann einige Zeit nicht geschossen
-    //werden, um dauerladen und Schießen zu vermeiden
+    //werden, umdauerladen und Schießen zu vermeiden
     if (!curWeapon.isShooting) {
         curWeapon.reload();
+    }
+    
+    if (key == 'g') {
+        worldCamera.Pos.x = 0;
+        worldCamera.Pos.y = 0;
+        CurScene.init();
     }
 }

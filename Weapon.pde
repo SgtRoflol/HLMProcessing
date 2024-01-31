@@ -38,7 +38,6 @@ class Weapon{
         for (Projectile Bullet : Bullets) {
             Bullet.Origin = new PVector(Origin.x,Origin.y);
             Bullet.render();
-            println(Origin);
         } 
         //Wenn der Cooldown ziwschen Schüssen/nach dem Nachladen noch nicht 0 ist -> runterzählen
         if (cooldown > 1.0f) {

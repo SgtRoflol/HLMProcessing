@@ -17,6 +17,9 @@ class Projectile{
         init();
     }
     
+    void setWalls(Wall[] Walls) {
+        this.Walls = Walls;
+    }
     
     void init() {
         isActive = false;
@@ -39,7 +42,7 @@ class Projectile{
         color curcol = g.fillColor;
         fill(255, 255, 0);
         
-        if (isActive) {       
+        if (isActive && isOnScreen()) {       
             if (checkCollision()) {
                 isActive = false;
             }
@@ -52,17 +55,23 @@ class Projectile{
             fill(curcol);
     } }
     
-    boolean checkCollision() {
+    boolean isOnScreen() {
         //Wenn das Projektil ausserhalb des Bildschirms ist
         if (Pos.x > worldCamera.Pos.x + width || Pos.x < worldCamera.Pos.x) {
-            return true;
+            return false;
         }    
         if (Pos.y > worldCamera.Pos.y + height || Pos.y < worldCamera.Pos.y) {
-            return true;
+            return false;
         }
-        
+        return true;
+    }
+    
+    boolean checkCollision() {
         //Wenn das Projektil eine Wand trifft
         for (Wall Wall : Walls) {
+            if (!Wall.isOnScreen()) {
+                continue;
+            }
             if (Pos.x + dir.x >= Wall.Pos.x && Pos.x + dir.x <= Wall.Pos.x + Wall.w && 
                 Pos.y + dir.y >= Wall.Pos.y && Pos.y + dir.y <= Wall.Pos.y + Wall.h) {
                 return true;
@@ -70,5 +79,4 @@ class Projectile{
         }
         return false;
     }
-    
 }

@@ -19,5 +19,15 @@ class Wall{
         
     }
     
+    boolean isOnScreen() {
+        if (Pos.x > worldCamera.Pos.x + width || Pos.x + w < worldCamera.Pos.x) {
+            return false;
+        }    
+        if (Pos.y > worldCamera.Pos.y + height || Pos.y + h < worldCamera.Pos.y) {
+            return false;
+        }
+        return true;
+    }
+    
     
 }

@@ -12,5 +12,6 @@ class Hud{
             fill(255,0,0);
         }
         text(curWeapon.Name,30,70);
+        text(Play.hp,30,100);
     }
 }

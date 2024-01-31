@@ -40,6 +40,7 @@ class Enemy{
             }
             else{
                 Waffe.cooldown = 30;
+                Waffe.isShooting = false;
             }
         }
         
@@ -64,6 +65,9 @@ class Enemy{
     
     void checkHit() {
         for (Projectile Bullet : PlayerProj) {
+            if (!Bullet.isActive) {
+                continue;
+            }
             float disX = Pos.x - Bullet.Pos.x;
             float disY = Pos.y - Bullet.Pos.y;
             if (sqrt(sq(disX) + sq(disY)) < size / 2 && Bullet.isActive && isAlive) {
@@ -75,6 +79,9 @@ class Enemy{
     
     boolean canSee() {
         for (Wall Wand : Waende) {
+            if (!Wand.isOnScreen()) {
+                continue;
+            }
             if (lineRect(width / 2 + worldCamera.Pos.x,height / 2 + worldCamera.Pos.y,Pos.x,Pos.y,Wand.Pos.x,Wand.Pos.y,Wand.w,Wand.h)) {
                 return true;
             }
