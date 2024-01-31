@@ -49,10 +49,10 @@ class Enemy{
     }
     
     boolean isOnScreen() {
-        if (Pos.x > worldCamera.Pos.x + width + size || Pos.x + size < worldCamera.Pos.x) {
+        if (Pos.x > worldCamera.Pos.x + width + size / 2 || Pos.x + size / 2 < worldCamera.Pos.x) {
             return false;
         }   
-        if (Pos.y > worldCamera.Pos.y + height + size || Pos.y + size < worldCamera.Pos.y) {
+        if (Pos.y > worldCamera.Pos.y + height + size / 2 || Pos.y + size / 2 < worldCamera.Pos.y) {
             return false;
         }
         
@@ -79,12 +79,12 @@ class Enemy{
     
     boolean canSee() {
         for (Wall Wand : Waende) {
-            if (!Wand.isOnScreen()) {
-                continue;
-            }
-            if (lineRect(width / 2 + worldCamera.Pos.x,height / 2 + worldCamera.Pos.y,Pos.x,Pos.y,Wand.Pos.x,Wand.Pos.y,Wand.w,Wand.h)) {
-                return true;
-            }
+            if (Wand.isOnScreen()) {
+                
+                if (lineRect(width / 2 + worldCamera.Pos.x,height / 2 + worldCamera.Pos.y,Pos.x,Pos.y,Wand.Pos.x,Wand.Pos.y,Wand.w,Wand.h)) {
+                    return true;
+                }
+            } 
         }
         return false;
     }
@@ -100,7 +100,7 @@ class Enemy{
         boolean bottom = lineLine(x1,y1,x2,y2, rx,ry + rh, rx + rw,ry + rh);
         
         // if ANY of the above are true, the line
-        //has hitthe rectangle
+        //has hit the rectangle
         if (left || right || top || bottom) {
             println("HUHU");
             return true;

@@ -92,13 +92,11 @@ public void keyPressed() {
 }
 
 class Camera {
-    int shiftdist;
     PVector Pos;
     
     
     Camera() {
         Pos = new PVector(0, 0);
-        shiftdist = 20;
     }
     
     public void draw() {
@@ -163,10 +161,10 @@ class Enemy{
     }
     
     public boolean isOnScreen() {
-        if (Pos.x > worldCamera.Pos.x + width + size || Pos.x + size < worldCamera.Pos.x) {
+        if (Pos.x > worldCamera.Pos.x + width + size / 2 || Pos.x + size / 2 < worldCamera.Pos.x) {
             return false;
         }   
-        if (Pos.y > worldCamera.Pos.y + height + size || Pos.y + size < worldCamera.Pos.y) {
+        if (Pos.y > worldCamera.Pos.y + height + size / 2 || Pos.y + size / 2 < worldCamera.Pos.y) {
             return false;
         }
         
@@ -193,12 +191,12 @@ class Enemy{
     
     public boolean canSee() {
         for (Wall Wand : Waende) {
-            if (!Wand.isOnScreen()) {
-                continue;
-            }
-            if (lineRect(width / 2 + worldCamera.Pos.x,height / 2 + worldCamera.Pos.y,Pos.x,Pos.y,Wand.Pos.x,Wand.Pos.y,Wand.w,Wand.h)) {
-                return true;
-            }
+            if (Wand.isOnScreen()) {
+                
+                if (lineRect(width / 2 + worldCamera.Pos.x,height / 2 + worldCamera.Pos.y,Pos.x,Pos.y,Wand.Pos.x,Wand.Pos.y,Wand.w,Wand.h)) {
+                    return true;
+                }
+            } 
         }
         return false;
     }
@@ -214,7 +212,7 @@ class Enemy{
         boolean bottom = lineLine(x1,y1,x2,y2, rx,ry + rh, rx + rw,ry + rh);
         
         // if ANY of the above are true, the line
-        //has hitthe rectangle
+        //has hit the rectangle
         if (left || right || top || bottom) {
             println("HUHU");
             return true;
@@ -282,7 +280,9 @@ class Player{
         this.Waende = Waende;
         
         Waffen = new Weapon[3]; //Arraylänge definieren
-        Waffen[0] = new Weapon("Waffe",30,10,5,50,Origin,false,CurScene.getWalls());// Konstruktor -> String Name, int maxAmmo, int projSpeed, int cad
+        //Konstruktor -> String Name, int maxAmmo, int projSpeed,
+        //int cad,float reloadTime, PVector Origin, boolean isHostile, Wall[] Walls
+        Waffen[0] = new Weapon("Waffe",30,10,5,50,Origin,false,CurScene.getWalls());
         Waffen[1] = new Weapon("Waffe2",10,20,30,60,Origin,false,CurScene.getWalls());
         Waffen[2] = new Weapon("Waffe3",5,40,70,100,Origin,false,CurScene.getWalls()); 
     }
@@ -374,15 +374,15 @@ class Player{
     
     public void checkHit() {
         for (Projectile Bullet : EnemyProj) {
-            if (!Bullet.isActive) {
-                continue;
-            }
-            float disX = worldCamera.Pos.x + width / 2 - Bullet.Pos.x;
-            float disY = worldCamera.Pos.y + height / 2 - Bullet.Pos.y;
-            if (sqrt(sq(disX) + sq(disY)) < size / 2 && Bullet.isActive) {
-                hp = hp - 10;
-                println("AUA");
-                Bullet.init();
+            if (Bullet.isActive) {
+                
+                float disX = worldCamera.Pos.x + width / 2 - Bullet.Pos.x;
+                float disY = worldCamera.Pos.y + height / 2 - Bullet.Pos.y;
+                if (sqrt(sq(disX) + sq(disY)) < size / 2 && Bullet.isActive) {
+                    hp = hp - 10;
+                    println("AUA");
+                    Bullet.init();
+                }
             }
         }
     }
@@ -430,8 +430,10 @@ class Projectile{
         ellipseMode(CENTER);
         int curcol = g.fillColor;
         fill(255, 255, 0);
-        
-        if (isActive && isOnScreen()) {       
+        if (!isOnScreen()) {
+            isActive = false;
+        }
+        else if (isActive) {       
             if (checkCollision()) {
                 isActive = false;
             }
@@ -458,13 +460,12 @@ class Projectile{
     public boolean checkCollision() {
         //Wenn das Projektil eine Wand trifft
         for (Wall Wall : Walls) {
-            if (!Wall.isOnScreen()) {
-                continue;
+            if (Wall.isOnScreen()) { 
+                if (Pos.x + dir.x >= Wall.Pos.x && Pos.x + dir.x <= Wall.Pos.x + Wall.w && 
+                    Pos.y + dir.y >= Wall.Pos.y && Pos.y + dir.y <= Wall.Pos.y + Wall.h) {
+                    return true;
+                } 
             }
-            if (Pos.x + dir.x >= Wall.Pos.x && Pos.x + dir.x <= Wall.Pos.x + Wall.w && 
-                Pos.y + dir.y >= Wall.Pos.y && Pos.y + dir.y <= Wall.Pos.y + Wall.h) {
-                return true;
-            } 
         }
         return false;
     }

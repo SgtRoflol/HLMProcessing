@@ -1,12 +1,10 @@
 
 class Camera {
-    int shiftdist;
     PVector Pos;
     
     
     Camera() {
         Pos = new PVector(0, 0);
-        shiftdist = 20;
     }
     
     void draw() {

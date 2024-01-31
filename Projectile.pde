@@ -41,8 +41,10 @@ class Projectile{
         ellipseMode(CENTER);
         color curcol = g.fillColor;
         fill(255, 255, 0);
-        
-        if (isActive && isOnScreen()) {       
+        if (!isOnScreen()) {
+            isActive = false;
+        }
+        else if (isActive) {       
             if (checkCollision()) {
                 isActive = false;
             }
@@ -69,13 +71,12 @@ class Projectile{
     boolean checkCollision() {
         //Wenn das Projektil eine Wand trifft
         for (Wall Wall : Walls) {
-            if (!Wall.isOnScreen()) {
-                continue;
+            if (Wall.isOnScreen()) { 
+                if (Pos.x + dir.x >= Wall.Pos.x && Pos.x + dir.x <= Wall.Pos.x + Wall.w && 
+                    Pos.y + dir.y >= Wall.Pos.y && Pos.y + dir.y <= Wall.Pos.y + Wall.h) {
+                    return true;
+                } 
             }
-            if (Pos.x + dir.x >= Wall.Pos.x && Pos.x + dir.x <= Wall.Pos.x + Wall.w && 
-                Pos.y + dir.y >= Wall.Pos.y && Pos.y + dir.y <= Wall.Pos.y + Wall.h) {
-                return true;
-            } 
         }
         return false;
     }

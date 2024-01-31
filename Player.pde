@@ -22,7 +22,9 @@ class Player{
         this.Waende = Waende;
         
         Waffen = new Weapon[3]; //Arraylänge definieren
-        Waffen[0] = new Weapon("Waffe",30,10,5,50,Origin,false,CurScene.getWalls());// Konstruktor -> String Name, int maxAmmo, int projSpeed, int cad
+        //Konstruktor -> String Name, int maxAmmo, int projSpeed, 
+        //int cad,float reloadTime, PVector Origin, boolean isHostile, Wall[] Walls
+        Waffen[0] = new Weapon("Waffe",30,10,5,50,Origin,false,CurScene.getWalls());
         Waffen[1] = new Weapon("Waffe2",10,20,30,60,Origin,false,CurScene.getWalls());
         Waffen[2] = new Weapon("Waffe3",5,40,70,100,Origin,false,CurScene.getWalls()); 
     }
@@ -114,15 +116,15 @@ class Player{
     
     void checkHit() {
         for (Projectile Bullet : EnemyProj) {
-            if (!Bullet.isActive) {
-                continue;
-            }
-            float disX = worldCamera.Pos.x + width / 2 - Bullet.Pos.x;
-            float disY = worldCamera.Pos.y + height / 2 - Bullet.Pos.y;
-            if (sqrt(sq(disX) + sq(disY)) < size / 2 && Bullet.isActive) {
-                hp = hp - 10;
-                println("AUA");
-                Bullet.init();
+            if (Bullet.isActive) {
+                
+                float disX = worldCamera.Pos.x + width / 2 - Bullet.Pos.x;
+                float disY = worldCamera.Pos.y + height / 2 - Bullet.Pos.y;
+                if (sqrt(sq(disX) + sq(disY)) < size / 2 && Bullet.isActive) {
+                    hp = hp - 10;
+                    println("AUA");
+                    Bullet.init();
+                }
             }
         }
     }
