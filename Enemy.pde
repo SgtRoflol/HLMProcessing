@@ -1,4 +1,5 @@
 class Enemy{
+    int hp;
     boolean isAlive;
     PVector Pos;
     Projectile[] PlayerProj;
@@ -8,14 +9,15 @@ class Enemy{
     Weapon Waffe;
     
     Enemy(PVector Pos,Wall[] Walls) {
+        hp = 50;
         this.Pos = Pos;
         isAlive = true;
         size = 50;
         this.Play = Play;
         getWalls(Walls);
         //Konstruktor -> String Name, int maxAmmo, int projSpeed, 
-        //int cad,float reloadTime, PVector Origin, boolean isHostile, Wall[] Walls
-        Waffe = new Weapon("Waffe",100,10,20,0,new PVector(Pos.x,Pos.y),true,Waende);
+        //int cad,float reloadTime, PVector Origin, boolean isHostile, Wall[] Walls,int damage
+        Waffe = new Weapon("Waffe",15,10,10,50,new PVector(Pos.x,Pos.y),true,Waende,7);
         Waffe.cooldown = 40;
     }
     
@@ -29,6 +31,9 @@ class Enemy{
     
     void render() {
         checkHit();
+        if (hp <= 0) {
+            isAlive = false;
+        }
         if (isAlive) {
             fill(0,0,255);
             ellipse(Pos.x,Pos.y,size,size);
@@ -39,7 +44,7 @@ class Enemy{
                 line(Pos.x,Pos.y,width / 2 + worldCamera.Pos.x,height / 2 + worldCamera.Pos.y);
             }
             else{
-                Waffe.cooldown = 30;
+                Waffe.cooldown = 10;
                 Waffe.isShooting = false;
             }
         }
@@ -71,7 +76,7 @@ class Enemy{
             float disX = Pos.x - Bullet.Pos.x;
             float disY = Pos.y - Bullet.Pos.y;
             if (sqrt(sq(disX) + sq(disY)) < size / 2 && Bullet.isActive && isAlive) {
-                isAlive = false;
+                hp -= Bullet.damage;
                 Bullet.init();
             }
         }

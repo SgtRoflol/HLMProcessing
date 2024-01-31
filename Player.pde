@@ -24,9 +24,9 @@ class Player{
         Waffen = new Weapon[3]; //Arraylänge definieren
         //Konstruktor -> String Name, int maxAmmo, int projSpeed, 
         //int cad,float reloadTime, PVector Origin, boolean isHostile, Wall[] Walls
-        Waffen[0] = new Weapon("Waffe",30,10,5,50,Origin,false,CurScene.getWalls());
-        Waffen[1] = new Weapon("Waffe2",10,20,30,60,Origin,false,CurScene.getWalls());
-        Waffen[2] = new Weapon("Waffe3",5,40,70,100,Origin,false,CurScene.getWalls()); 
+        Waffen[0] = new Weapon("Waffe",30,10,5,50,Origin,false,CurScene.getWalls(),5);
+        Waffen[1] = new Weapon("Waffe2",10,20,30,60,Origin,false,CurScene.getWalls(),10);
+        Waffen[2] = new Weapon("Waffe3",5,40,70,100,Origin,false,CurScene.getWalls(),30); 
     }
     
     
@@ -121,7 +121,7 @@ class Player{
                 float disX = worldCamera.Pos.x + width / 2 - Bullet.Pos.x;
                 float disY = worldCamera.Pos.y + height / 2 - Bullet.Pos.y;
                 if (sqrt(sq(disX) + sq(disY)) < size / 2 && Bullet.isActive) {
-                    hp = hp - 10;
+                    hp = hp - Bullet.damage;
                     println("AUA");
                     Bullet.init();
                 }

@@ -1,4 +1,5 @@
 Camera worldCamera; //Kamera
+boolean[] keys = new boolean[128];
 Player Play; //Spieler
 Weapon curWeapon; //Aktuelle Waffe
 Scene CurScene;
@@ -72,4 +73,8 @@ void keyPressed() {
         worldCamera.Pos.y = 0;
         CurScene.init();
     }
+    keys[keyCode] = true;
+}
+void keyReleased() {
+    keys[keyCode] = false;
 }

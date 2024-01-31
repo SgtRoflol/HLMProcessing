@@ -16,6 +16,7 @@ import java.io.IOException;
 public class Spiel3 extends PApplet {
 
 Camera worldCamera; //Kamera
+boolean[] keys = new boolean[128];
 Player Play; //Spieler
 Weapon curWeapon; //Aktuelle Waffe
 Scene CurScene;
@@ -89,28 +90,35 @@ public void keyPressed() {
         worldCamera.Pos.y = 0;
         CurScene.init();
     }
+    keys[keyCode] = true;
+}
+public void keyReleased() {
+    keys[keyCode] = false;
 }
 
 class Camera {
     PVector Pos;
-    
+    int speed;
     
     Camera() {
         Pos = new PVector(0, 0);
+        speed = 5;
     }
     
     public void draw() {
         if (keyPressed) {
-            if (key == 'w') {if (!Play.getCollision(new PVector(Pos.x,Pos.y - 5))) {Pos.y -= 5;} } 
-            if (key == 's') {if (!Play.getCollision(new PVector(Pos.x,Pos.y + 5))) {Pos.y += 5;} } 
-            if (key == 'a') {if (!Play.getCollision(new PVector(Pos.x - 5,Pos.y))) {Pos.x -= 5;} } 
-            if (key == 'd') {if (!Play.getCollision(new PVector(Pos.x + 5,Pos.y))) {Pos.x += 5;} } 
+            
+            if (keys[87]) {if (!Play.getCollision(new PVector(Pos.x,Pos.y - speed))) {Pos.y -= speed;} } 
+            if (keys[83]) {if (!Play.getCollision(new PVector(Pos.x,Pos.y + speed))) {Pos.y += speed;} } 
+            if (keys[65]) {if (!Play.getCollision(new PVector(Pos.x - speed,Pos.y))) {Pos.x -= speed;} } 
+            if (keys[68]) {if (!Play.getCollision(new PVector(Pos.x + speed,Pos.y))) {Pos.x += speed;} } 
             
         }
     }
     
 }
 class Enemy{
+    int hp;
     boolean isAlive;
     PVector Pos;
     Projectile[] PlayerProj;
@@ -120,14 +128,15 @@ class Enemy{
     Weapon Waffe;
     
     Enemy(PVector Pos,Wall[] Walls) {
+        hp = 50;
         this.Pos = Pos;
         isAlive = true;
         size = 50;
         this.Play = Play;
         getWalls(Walls);
         //Konstruktor -> String Name, int maxAmmo, int projSpeed, 
-        //int cad,float reloadTime, PVector Origin, boolean isHostile, Wall[] Walls
-        Waffe = new Weapon("Waffe",100,10,20,0,new PVector(Pos.x,Pos.y),true,Waende);
+        //int cad,float reloadTime, PVector Origin, boolean isHostile, Wall[] Walls,int damage
+        Waffe = new Weapon("Waffe",15,10,10,50,new PVector(Pos.x,Pos.y),true,Waende,7);
         Waffe.cooldown = 40;
     }
     
@@ -141,6 +150,9 @@ class Enemy{
     
     public void render() {
         checkHit();
+        if (hp <= 0) {
+            isAlive = false;
+        }
         if (isAlive) {
             fill(0,0,255);
             ellipse(Pos.x,Pos.y,size,size);
@@ -151,7 +163,7 @@ class Enemy{
                 line(Pos.x,Pos.y,width / 2 + worldCamera.Pos.x,height / 2 + worldCamera.Pos.y);
             }
             else{
-                Waffe.cooldown = 30;
+                Waffe.cooldown = 10;
                 Waffe.isShooting = false;
             }
         }
@@ -183,7 +195,7 @@ class Enemy{
             float disX = Pos.x - Bullet.Pos.x;
             float disY = Pos.y - Bullet.Pos.y;
             if (sqrt(sq(disX) + sq(disY)) < size / 2 && Bullet.isActive && isAlive) {
-                isAlive = false;
+                hp -= Bullet.damage;
                 Bullet.init();
             }
         }
@@ -280,11 +292,11 @@ class Player{
         this.Waende = Waende;
         
         Waffen = new Weapon[3]; //Arraylänge definieren
-        //Konstruktor -> String Name, int maxAmmo, int projSpeed,
+        //Konstruktor -> String Name, int maxAmmo, int projSpeed, 
         //int cad,float reloadTime, PVector Origin, boolean isHostile, Wall[] Walls
-        Waffen[0] = new Weapon("Waffe",30,10,5,50,Origin,false,CurScene.getWalls());
-        Waffen[1] = new Weapon("Waffe2",10,20,30,60,Origin,false,CurScene.getWalls());
-        Waffen[2] = new Weapon("Waffe3",5,40,70,100,Origin,false,CurScene.getWalls()); 
+        Waffen[0] = new Weapon("Waffe",30,10,5,50,Origin,false,CurScene.getWalls(),5);
+        Waffen[1] = new Weapon("Waffe2",10,20,30,60,Origin,false,CurScene.getWalls(),10);
+        Waffen[2] = new Weapon("Waffe3",5,40,70,100,Origin,false,CurScene.getWalls(),30); 
     }
     
     
@@ -379,7 +391,7 @@ class Player{
                 float disX = worldCamera.Pos.x + width / 2 - Bullet.Pos.x;
                 float disY = worldCamera.Pos.y + height / 2 - Bullet.Pos.y;
                 if (sqrt(sq(disX) + sq(disY)) < size / 2 && Bullet.isActive) {
-                    hp = hp - 10;
+                    hp = hp - Bullet.damage;
                     println("AUA");
                     Bullet.init();
                 }
@@ -395,14 +407,16 @@ class Projectile{
     Wall[] Walls;
     boolean isHostile;
     PVector Origin;
+    int damage;
     
-    Projectile(float speed, boolean hostile, PVector Origin, Wall[] Walls) {
+    Projectile(float speed, boolean hostile, PVector Origin, Wall[] Walls, int damage) {
         this.speed = speed;
         isHostile = hostile;
         this.Origin = Origin;
         this.Walls = Walls;
         Pos = new PVector();
         dir = new PVector();
+        this.damage = damage;
         init();
     }
     
@@ -588,8 +602,10 @@ class Weapon{
     float targX;
     float targY;
     PVector Origin;
+    boolean isHostile;
     
-    Weapon(String Name, int maxAmmo, int projSpeed, int cad,float reloadTime, PVector Origin, boolean isHostile, Wall[] Walls) {
+    Weapon(String Name, int maxAmmo, int projSpeed, int cad,float reloadTime, PVector Origin, boolean isHostile, Wall[] Walls,int damage) {
+        this.isHostile = isHostile;
         this.Origin = Origin;
         this.Name = Name;
         this.maxAmmo = maxAmmo;
@@ -597,9 +613,10 @@ class Weapon{
         this.projSpeed = projSpeed;
         //Array mit Projektilen mit der selben Größe wie das Magazin
         Bullets = new Projectile[ammo];
+        
         //Alle Projektile instanziieren
         for (int i = 0; i < Bullets.length; i++) {
-            Bullets[i] = new Projectile(projSpeed,isHostile,new PVector(Origin.x,Origin.y),Walls);
+            Bullets[i] = new Projectile(projSpeed,isHostile,new PVector(Origin.x,Origin.y),Walls,damage);
         }
         this.cad = cad;
         this.reloadTime = reloadTime;  
@@ -628,6 +645,11 @@ class Weapon{
     
     public void shoot() {
         //Wenn Maus gedrückt wird und cooldown 0 ist, also geschossen werden soll UND darf
+        if (isShooting && ammo <= 0 && isHostile) {
+            cooldown = reloadTime;
+            ammo = maxAmmo;
+            return;
+        }
         if (isShooting && cooldown == 0 && ammo != 0) {
             //Überprüfen, ob aktuell noch ein Projektil nicht geschossen wurde und Munition übrig ist
             for (Projectile Bullet : Bullets) {

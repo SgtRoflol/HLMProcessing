@@ -1,18 +1,20 @@
 
 class Camera {
     PVector Pos;
-    
+    int speed;
     
     Camera() {
         Pos = new PVector(0, 0);
+        speed = 5;
     }
     
     void draw() {
         if (keyPressed) {
-            if (key == 'w') {if (!Play.getCollision(new PVector(Pos.x,Pos.y - 5))) {Pos.y -= 5;} } 
-            if (key == 's') {if (!Play.getCollision(new PVector(Pos.x,Pos.y + 5))) {Pos.y += 5;} } 
-            if (key == 'a') {if (!Play.getCollision(new PVector(Pos.x - 5,Pos.y))) {Pos.x -= 5;} } 
-            if (key == 'd') {if (!Play.getCollision(new PVector(Pos.x + 5,Pos.y))) {Pos.x += 5;} } 
+            
+            if (keys[87]) {if (!Play.getCollision(new PVector(Pos.x,Pos.y - speed))) {Pos.y -= speed;} } 
+            if (keys[83]) {if (!Play.getCollision(new PVector(Pos.x,Pos.y + speed))) {Pos.y += speed;} } 
+            if (keys[65]) {if (!Play.getCollision(new PVector(Pos.x - speed,Pos.y))) {Pos.x -= speed;} } 
+            if (keys[68]) {if (!Play.getCollision(new PVector(Pos.x + speed,Pos.y))) {Pos.x += speed;} } 
             
         }
     }

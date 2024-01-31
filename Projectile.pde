@@ -6,14 +6,16 @@ class Projectile{
     Wall[] Walls;
     boolean isHostile;
     PVector Origin;
+    int damage;
     
-    Projectile(float speed, boolean hostile, PVector Origin, Wall[] Walls) {
+    Projectile(float speed, boolean hostile, PVector Origin, Wall[] Walls, int damage) {
         this.speed = speed;
         isHostile = hostile;
         this.Origin = Origin;
         this.Walls = Walls;
         Pos = new PVector();
         dir = new PVector();
+        this.damage = damage;
         init();
     }
     

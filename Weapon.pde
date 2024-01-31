@@ -11,8 +11,10 @@ class Weapon{
     float targX;
     float targY;
     PVector Origin;
+    boolean isHostile;
     
-    Weapon(String Name, int maxAmmo, int projSpeed, int cad,float reloadTime, PVector Origin, boolean isHostile, Wall[] Walls) {
+    Weapon(String Name, int maxAmmo, int projSpeed, int cad,float reloadTime, PVector Origin, boolean isHostile, Wall[] Walls,int damage) {
+        this.isHostile = isHostile;
         this.Origin = Origin;
         this.Name = Name;
         this.maxAmmo = maxAmmo;
@@ -20,9 +22,10 @@ class Weapon{
         this.projSpeed = projSpeed;
         //Array mit Projektilen mit der selben Größe wie das Magazin
         Bullets = new Projectile[ammo];
+        
         //Alle Projektile instanziieren
         for (int i = 0; i < Bullets.length; i++) {
-            Bullets[i] = new Projectile(projSpeed,isHostile,new PVector(Origin.x,Origin.y),Walls);
+            Bullets[i] = new Projectile(projSpeed,isHostile,new PVector(Origin.x,Origin.y),Walls,damage);
         }
         this.cad = cad;
         this.reloadTime = reloadTime;  
@@ -51,6 +54,11 @@ class Weapon{
     
     void shoot() {
         //Wenn Maus gedrückt wird und cooldown 0 ist, also geschossen werden soll UND darf
+        if (isShooting && ammo <= 0 && isHostile) {
+            cooldown = reloadTime;
+            ammo = maxAmmo;
+            return;
+        }
         if (isShooting && cooldown == 0 && ammo != 0) {
             //Überprüfen, ob aktuell noch ein Projektil nicht geschossen wurde und Munition übrig ist
             for (Projectile Bullet : Bullets) {
