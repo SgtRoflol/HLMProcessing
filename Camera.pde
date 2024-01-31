@@ -9,7 +9,7 @@ class Camera {
     }
     
     void draw() {
-        if (keyPressed) {
+        if (keyPressed && Play.isAlive) {
             
             if (keys[87]) {if (!Play.getCollision(new PVector(Pos.x,Pos.y - speed))) {Pos.y -= speed;} } 
             if (keys[83]) {if (!Play.getCollision(new PVector(Pos.x,Pos.y + speed))) {Pos.y += speed;} } 

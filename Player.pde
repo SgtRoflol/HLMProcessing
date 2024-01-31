@@ -10,9 +10,13 @@ class Player{
     Weapon[] Waffen; //Array mit allen Waffen
     int hp;
     Projectile[] EnemyProj;
+    PImage img;
+    PImage dead;
+    boolean isAlive;
     
     Player(Wall[] Waende) {
         //Position auf Bildschirmmitte legen und Farbe festlegen
+        isAlive = true;
         hp = 100;
         x = width / 2;
         y = height / 2;
@@ -20,6 +24,8 @@ class Player{
         farbe = color(255,0,0);
         size = 50;
         this.Waende = Waende;
+        img = loadImage("Character.png");
+        dead = loadImage("dead.png");
         
         Waffen = new Weapon[3]; //Arraylänge definieren
         //Konstruktor -> String Name, int maxAmmo, int projSpeed, 
@@ -34,12 +40,21 @@ class Player{
         //Spieler zeichnen, aktuelle fill Farbe speichern und später zurücksetzen
         if (hp <= 0) {
             farbe = (color(0));
+            isAlive = false;
         }
+        if (!isAlive) {
+            imageMode(CENTER);
+            image(dead,0,0,size * 2,size * 2);
+            return;
+        }
+        
         checkHit();
         color curcol = g.fillColor;
         fill(farbe);
         rectMode(CENTER);
-        rect(0,0,size,size);
+        imageMode(CENTER);
+        image(img,0,0,size * 1.5,size * 1.5);
+        //rect(0,0,size,size);
         fill(curcol);
         println(getCollision(worldCamera.Pos));
         for (Weapon Waffe : Waffen) {
@@ -56,9 +71,11 @@ class Player{
     }
     
     void rot() {
-        //Spielerrechteck zur Maus hindrehen
         pushMatrix();
-        angle = atan2(x - mouseX, y - mouseY);
+        if (isAlive) {
+            //Spielerrechteck zur Maus hindrehen
+            angle = atan2(x - mouseX, y - mouseY);
+        }
         translate(x, y);
         rotate( -angle - HALF_PI);
         render();

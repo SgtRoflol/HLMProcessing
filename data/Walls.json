@@ -1,26 +1,104 @@
 [
     {
-        "PosX": 700,
-        "PosY": 200,
-        "Width": 300,
-        "Height": 100
+        "PosX": 1027,
+        "PosY": 558,
+        "Width": 337,
+        "Height": 31
     },
     {
-        "PosX": 200,
-        "PosY": 600,
-        "Width": 200,
-        "Height": 70
+        "PosX": 720,
+        "PosY": 781,
+        "Width": 31,
+        "Height": 337
     },
     {
-        "PosX": 10,
-        "PosY": 100,
-        "Width": 300,
-        "Height": 100
+        "PosX": 562,
+        "PosY": 1331,
+        "Width": 337,
+        "Height": 31
     },
     {
-        "PosX": 1000,
-        "PosY": 400,
+        "PosX": 1034,
+        "PosY": 779,
+        "Width": 31,
+        "Height": 583
+    },
+    {
+        "PosX": 397,
+        "PosY": 749,
+        "Width": 31,
+        "Height": 613
+    },
+    {
+        "PosX": 425,
+        "PosY": 750,
+        "Width": 638,
+        "Height": 31
+    },
+    {
+        "PosX": 1029,
+        "PosY": 30,
+        "Width": 31,
+        "Height": 528
+    },
+    {
+        "PosX": 825,
+        "PosY": 294,
+        "Width": 202,
+        "Height": 31
+    },
+    {
+        "PosX": 562,
+        "PosY": 128,
+        "Width": 202,
+        "Height": 31
+    },
+    {
+        "PosX": 532,
+        "PosY": 127,
+        "Width": 31,
+        "Height": 430
+    },
+    {
+        "PosX": 31,
+        "PosY": 528,
         "Width": 500,
-        "Height": 200
+        "Height": 31
+    },
+    {
+        "PosX": 31,
+        "PosY": 0,
+        "Width": 1438,
+        "Height": 31
+    },
+    {
+        "PosX": 1469,
+        "PosY": 0,
+        "Width": 31,
+        "Height": 1469
+    },
+    {
+        "PosX": 31,
+        "PosY": 1469,
+        "Width": 1469,
+        "Height": 31
+    },
+    {
+        "PosX": 0,
+        "PosY": 0,
+        "Width": 31,
+        "Height": 1500
+    },
+    {
+        "PosX": 313,
+        "PosY": 234,
+        "Width": 220,
+        "Height": 31
+    },
+    {
+        "PosX": 312,
+        "PosY": 344,
+        "Width": 31,
+        "Height": 185
     }
 ]

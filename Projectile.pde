@@ -60,12 +60,15 @@ class Projectile{
     } }
     
     boolean isOnScreen() {
-        //Wenn das Projektil ausserhalb des Bildschirms ist
-        if (Pos.x > worldCamera.Pos.x + width || Pos.x < worldCamera.Pos.x) {
-            return false;
-        }    
-        if (Pos.y > worldCamera.Pos.y + height || Pos.y < worldCamera.Pos.y) {
-            return false;
+        if (isHostile) {
+            //Wenn das Projektil ausserhalb des Bildschirms ist
+            if (Pos.x > worldCamera.Pos.x + width || Pos.x < worldCamera.Pos.x) {
+                return false;
+            }   
+            if (Pos.y > worldCamera.Pos.y + height || Pos.y < worldCamera.Pos.y) {
+                return false;
+            }
+            
         }
         return true;
     }
@@ -73,7 +76,7 @@ class Projectile{
     boolean checkCollision() {
         //Wenn das Projektil eine Wand trifft
         for (Wall Wall : Walls) {
-            if (Wall.isOnScreen()) { 
+            if (Wall.isOnScreen() || !isHostile) { 
                 if (Pos.x + dir.x >= Wall.Pos.x && Pos.x + dir.x <= Wall.Pos.x + Wall.w && 
                     Pos.y + dir.y >= Wall.Pos.y && Pos.y + dir.y <= Wall.Pos.y + Wall.h) {
                     return true;

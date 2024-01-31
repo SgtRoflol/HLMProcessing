@@ -106,7 +106,7 @@ class Camera {
     }
     
     public void draw() {
-        if (keyPressed) {
+        if (keyPressed && Play.isAlive) {
             
             if (keys[87]) {if (!Play.getCollision(new PVector(Pos.x,Pos.y - speed))) {Pos.y -= speed;} } 
             if (keys[83]) {if (!Play.getCollision(new PVector(Pos.x,Pos.y + speed))) {Pos.y += speed;} } 
@@ -128,7 +128,7 @@ class Enemy{
     Weapon Waffe;
     
     Enemy(PVector Pos,Wall[] Walls) {
-        hp = 50;
+        hp = 25;
         this.Pos = Pos;
         isAlive = true;
         size = 50;
@@ -280,9 +280,13 @@ class Player{
     Weapon[] Waffen; //Array mit allen Waffen
     int hp;
     Projectile[] EnemyProj;
+    PImage img;
+    PImage dead;
+    boolean isAlive;
     
     Player(Wall[] Waende) {
         //Position auf Bildschirmmitte legen und Farbe festlegen
+        isAlive = true;
         hp = 100;
         x = width / 2;
         y = height / 2;
@@ -290,6 +294,8 @@ class Player{
         farbe = color(255,0,0);
         size = 50;
         this.Waende = Waende;
+        img = loadImage("Character.png");
+        dead = loadImage("dead.png");
         
         Waffen = new Weapon[3]; //Arraylänge definieren
         //Konstruktor -> String Name, int maxAmmo, int projSpeed, 
@@ -304,12 +310,21 @@ class Player{
         //Spieler zeichnen, aktuelle fill Farbe speichern und später zurücksetzen
         if (hp <= 0) {
             farbe = (color(0));
+            isAlive = false;
         }
+        if (!isAlive) {
+            imageMode(CENTER);
+            image(dead,0,0,size * 2,size * 2);
+            return;
+        }
+        
         checkHit();
         int curcol = g.fillColor;
         fill(farbe);
         rectMode(CENTER);
-        rect(0,0,size,size);
+        imageMode(CENTER);
+        image(img,0,0,size * 1.5f,size * 1.5f);
+        //rect(0,0,size,size);
         fill(curcol);
         println(getCollision(worldCamera.Pos));
         for (Weapon Waffe : Waffen) {
@@ -326,9 +341,11 @@ class Player{
     }
     
     public void rot() {
-        //Spielerrechteck zur Maus hindrehen
         pushMatrix();
-        angle = atan2(x - mouseX, y - mouseY);
+        if (isAlive) {
+            //Spielerrechteck zur Maus hindrehen
+            angle = atan2(x - mouseX, y - mouseY);
+        }
         translate(x, y);
         rotate( -angle - HALF_PI);
         render();
@@ -461,12 +478,15 @@ class Projectile{
     } }
     
     public boolean isOnScreen() {
-        //Wenn das Projektil ausserhalb des Bildschirms ist
-        if (Pos.x > worldCamera.Pos.x + width || Pos.x < worldCamera.Pos.x) {
-            return false;
-        }    
-        if (Pos.y > worldCamera.Pos.y + height || Pos.y < worldCamera.Pos.y) {
-            return false;
+        if (isHostile) {
+            //Wenn das Projektil ausserhalb des Bildschirms ist
+            if (Pos.x > worldCamera.Pos.x + width || Pos.x < worldCamera.Pos.x) {
+                return false;
+            }   
+            if (Pos.y > worldCamera.Pos.y + height || Pos.y < worldCamera.Pos.y) {
+                return false;
+            }
+            
         }
         return true;
     }
@@ -474,7 +494,7 @@ class Projectile{
     public boolean checkCollision() {
         //Wenn das Projektil eine Wand trifft
         for (Wall Wall : Walls) {
-            if (Wall.isOnScreen()) { 
+            if (Wall.isOnScreen() || !isHostile) { 
                 if (Pos.x + dir.x >= Wall.Pos.x && Pos.x + dir.x <= Wall.Pos.x + Wall.w && 
                     Pos.y + dir.y >= Wall.Pos.y && Pos.y + dir.y <= Wall.Pos.y + Wall.h) {
                     return true;

@@ -9,7 +9,7 @@ class Enemy{
     Weapon Waffe;
     
     Enemy(PVector Pos,Wall[] Walls) {
-        hp = 50;
+        hp = 25;
         this.Pos = Pos;
         isAlive = true;
         size = 50;
