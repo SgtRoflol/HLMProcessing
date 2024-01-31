@@ -38,10 +38,8 @@ public void setup() {
     for (Weapon Waffe : Play.Waffen) {
         PlayerProj = (Projectile[])concat(PlayerProj, Waffe.getBullets());
     }
-    EnemyProj = new Projectile[0];
-    for (Enemy Gegner : CurScene.Gegners) {
-        EnemyProj = (Projectile[])concat(EnemyProj, Gegner.Waffe.getBullets());
-    }
+    getEnemyProj();
+    
     
     Play.setProjectiles(EnemyProj);
     Overlay = new Hud();
@@ -56,7 +54,9 @@ public void draw() {
     translate( -worldCamera.Pos.x, -worldCamera.Pos.y); //Worldcam verschiebt Achsen um Bewegungswert
     worldCamera.draw();
     Play.renderWeapons();
-    curWeapon.shoot();
+    if (Play.isAlive) {
+        curWeapon.shoot();
+    }
     CurScene.render();
     //WorldCamera Ende
     popMatrix();
@@ -64,9 +64,7 @@ public void draw() {
     fill(255);
     //Spieler zur Maus drehen
     Play.rot();   
-    println(frameRate);
 }
-
 public void mousePressed() {
     curWeapon.isShooting = true; //Wird gesetzt um beständiges Schießen bei Halten der Maustaste zu ermöglichen
 }
@@ -88,12 +86,35 @@ public void keyPressed() {
     if (key == 'g') {
         worldCamera.Pos.x = 0;
         worldCamera.Pos.y = 0;
+        Play.hp = 30;
         CurScene.init();
+        Play.isAlive = true;
+        CurScene.enemyAmount = CurScene.Gegners.length;
     }
     keys[keyCode] = true;
+    
+    if (key == 'k') {
+        CurScene = new Scene("Walls2.json","Enemies2.json");
+        worldCamera.Pos.x = 0;
+        worldCamera.Pos.y = 0;
+        Play.hp = 30;
+        CurScene.init();
+        Play.isAlive = true;
+        CurScene.enemyAmount = CurScene.Gegners.length;
+        getEnemyProj();
+        Play.setProjectiles(EnemyProj);
+        Play.setWalls(CurScene.getWalls());
+    }
 }
 public void keyReleased() {
     keys[keyCode] = false;
+}
+
+public void getEnemyProj() {
+    EnemyProj = new Projectile[0];
+    for (Enemy Gegner : CurScene.Gegners) {
+        EnemyProj = (Projectile[])concat(EnemyProj, Gegner.Waffe.getBullets());
+    }
 }
 
 class Camera {
@@ -102,7 +123,7 @@ class Camera {
     
     Camera() {
         Pos = new PVector(0, 0);
-        speed = 5;
+        speed = 6;
     }
     
     public void draw() {
@@ -128,7 +149,7 @@ class Enemy{
     Weapon Waffe;
     
     Enemy(PVector Pos,Wall[] Walls) {
-        hp = 25;
+        hp = 10;
         this.Pos = Pos;
         isAlive = true;
         size = 50;
@@ -136,7 +157,7 @@ class Enemy{
         getWalls(Walls);
         //Konstruktor -> String Name, int maxAmmo, int projSpeed, 
         //int cad,float reloadTime, PVector Origin, boolean isHostile, Wall[] Walls,int damage
-        Waffe = new Weapon("Waffe",15,10,10,50,new PVector(Pos.x,Pos.y),true,Waende,7);
+        Waffe = new Weapon("Waffe",15,15,10,50,new PVector(Pos.x,Pos.y),true,Waende,10);
         Waffe.cooldown = 40;
     }
     
@@ -149,11 +170,12 @@ class Enemy{
     } 
     
     public void render() {
-        checkHit();
+        
         if (hp <= 0) {
             isAlive = false;
         }
         if (isAlive) {
+            checkHit();
             fill(0,0,255);
             ellipse(Pos.x,Pos.y,size,size);
             if (isOnScreen() && !canSee()) { 
@@ -199,6 +221,9 @@ class Enemy{
                 Bullet.init();
             }
         }
+        if (hp <= 0) {
+            CurScene.enemyAmount--;
+        }
     }
     
     public boolean canSee() {
@@ -226,11 +251,9 @@ class Enemy{
         // if ANY of the above are true, the line
         //has hit the rectangle
         if (left || right || top || bottom) {
-            println("HUHU");
             return true;
             
         }
-        println("Huch");
         return false;
         
     }
@@ -266,6 +289,12 @@ class Hud{
         }
         text(curWeapon.Name,30,70);
         text(Play.hp,30,100);
+        if (CurScene.enemyAmount <= 0) {
+            textSize(50);
+            textAlign(CENTER);
+            text("YIPPIE!",width / 2,height / 2);
+            textAlign(CORNER);
+        }
     }
 }
 class Player{
@@ -287,7 +316,7 @@ class Player{
     Player(Wall[] Waende) {
         //Position auf Bildschirmmitte legen und Farbe festlegen
         isAlive = true;
-        hp = 100;
+        hp = 30;
         x = width / 2;
         y = height / 2;
         Origin = new PVector(worldCamera.Pos.x + height / 2,worldCamera.Pos.y + height / 2);    
@@ -300,7 +329,7 @@ class Player{
         Waffen = new Weapon[3]; //Arraylänge definieren
         //Konstruktor -> String Name, int maxAmmo, int projSpeed, 
         //int cad,float reloadTime, PVector Origin, boolean isHostile, Wall[] Walls
-        Waffen[0] = new Weapon("Waffe",30,10,5,50,Origin,false,CurScene.getWalls(),5);
+        Waffen[0] = new Weapon("Waffe",30,15,5,50,Origin,false,CurScene.getWalls(),10);
         Waffen[1] = new Weapon("Waffe2",10,20,30,60,Origin,false,CurScene.getWalls(),10);
         Waffen[2] = new Weapon("Waffe3",5,40,70,100,Origin,false,CurScene.getWalls(),30); 
     }
@@ -309,6 +338,7 @@ class Player{
     public void render() {
         //Spieler zeichnen, aktuelle fill Farbe speichern und später zurücksetzen
         if (hp <= 0) {
+            hp = 0;
             farbe = (color(0));
             isAlive = false;
         }
@@ -326,7 +356,6 @@ class Player{
         image(img,0,0,size * 1.5f,size * 1.5f);
         //rect(0,0,size,size);
         fill(curcol);
-        println(getCollision(worldCamera.Pos));
         for (Weapon Waffe : Waffen) {
             Waffe.Origin = new PVector(worldCamera.Pos.x + width / 2,worldCamera.Pos.y + height / 2);
         }
@@ -401,6 +430,13 @@ class Player{
         EnemyProj = Bullets;
     }
     
+    public void setWalls(Wall[] Walls) {
+        this.Waende = Walls;
+        for (Weapon Waffe : Waffen) {
+            Waffe.setWalls(Walls);
+        }
+    }
+    
     public void checkHit() {
         for (Projectile Bullet : EnemyProj) {
             if (Bullet.isActive) {
@@ -409,7 +445,6 @@ class Player{
                 float disY = worldCamera.Pos.y + height / 2 - Bullet.Pos.y;
                 if (sqrt(sq(disX) + sq(disY)) < size / 2 && Bullet.isActive) {
                     hp = hp - Bullet.damage;
-                    println("AUA");
                     Bullet.init();
                 }
             }
@@ -508,6 +543,7 @@ class Scene{
     Wall[] Waende;
     Enemy[] Gegners;
     PVector StartingPos;
+    int enemyAmount;
     
     Scene(String FileNameWalls,String FileNameEnemies) {
         loadWalls(FileNameWalls);
@@ -544,6 +580,8 @@ class Scene{
             
             Gegners[i] = new Enemy(new PVector(PosX,PosY),Waende);
         }
+        setPlayer(Play);
+        enemyAmount = Gegners.length;
         
     }
     
@@ -572,6 +610,7 @@ class Scene{
         for (Enemy Gegner : Gegners) {
             Gegner.Waffe.ammo = Gegner.Waffe.maxAmmo;
             Gegner.isAlive = true;
+            Gegner.hp = 10;
         }  
     }
     
@@ -697,6 +736,12 @@ class Weapon{
     
     public Projectile[] getBullets() {
         return Bullets;
+    }
+    
+    public void setWalls(Wall[] Walls) {
+        for (Projectile Bullet : Bullets) {
+            Bullet.setWalls(Walls);
+        }
     }
 }
 

@@ -13,5 +13,11 @@ class Hud{
         }
         text(curWeapon.Name,30,70);
         text(Play.hp,30,100);
+        if (CurScene.enemyAmount <= 0) {
+            textSize(50);
+            textAlign(CENTER);
+            text("YIPPIE!",width / 2,height / 2);
+            textAlign(CORNER);
+        }
     }
 }

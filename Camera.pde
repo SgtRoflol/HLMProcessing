@@ -5,7 +5,7 @@ class Camera {
     
     Camera() {
         Pos = new PVector(0, 0);
-        speed = 5;
+        speed = 6;
     }
     
     void draw() {

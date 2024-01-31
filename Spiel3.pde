@@ -21,10 +21,8 @@ void setup() {
     for (Weapon Waffe : Play.Waffen) {
         PlayerProj = (Projectile[])concat(PlayerProj, Waffe.getBullets());
     }
-    EnemyProj = new Projectile[0];
-    for (Enemy Gegner : CurScene.Gegners) {
-        EnemyProj = (Projectile[])concat(EnemyProj, Gegner.Waffe.getBullets());
-    }
+    getEnemyProj();
+    
     
     Play.setProjectiles(EnemyProj);
     Overlay = new Hud();
@@ -39,7 +37,9 @@ void draw() {
     translate( -worldCamera.Pos.x, -worldCamera.Pos.y); //Worldcam verschiebt Achsen um Bewegungswert
     worldCamera.draw();
     Play.renderWeapons();
-    curWeapon.shoot();
+    if (Play.isAlive) {
+        curWeapon.shoot();
+    }
     CurScene.render();
     //WorldCamera Ende
     popMatrix();
@@ -47,9 +47,7 @@ void draw() {
     fill(255);
     //Spieler zur Maus drehen
     Play.rot();   
-    println(frameRate);
 }
-
 void mousePressed() {
     curWeapon.isShooting = true; //Wird gesetzt um beständiges Schießen bei Halten der Maustaste zu ermöglichen
 }
@@ -71,10 +69,33 @@ void keyPressed() {
     if (key == 'g') {
         worldCamera.Pos.x = 0;
         worldCamera.Pos.y = 0;
+        Play.hp = 30;
         CurScene.init();
+        Play.isAlive = true;
+        CurScene.enemyAmount = CurScene.Gegners.length;
     }
     keys[keyCode] = true;
+    
+    if (key == 'k') {
+        CurScene = new Scene("Walls2.json","Enemies2.json");
+        worldCamera.Pos.x = 0;
+        worldCamera.Pos.y = 0;
+        Play.hp = 30;
+        CurScene.init();
+        Play.isAlive = true;
+        CurScene.enemyAmount = CurScene.Gegners.length;
+        getEnemyProj();
+        Play.setProjectiles(EnemyProj);
+        Play.setWalls(CurScene.getWalls());
+    }
 }
 void keyReleased() {
     keys[keyCode] = false;
+}
+
+void getEnemyProj() {
+    EnemyProj = new Projectile[0];
+    for (Enemy Gegner : CurScene.Gegners) {
+        EnemyProj = (Projectile[])concat(EnemyProj, Gegner.Waffe.getBullets());
+    }
 }

@@ -2,6 +2,7 @@ class Scene{
     Wall[] Waende;
     Enemy[] Gegners;
     PVector StartingPos;
+    int enemyAmount;
     
     Scene(String FileNameWalls,String FileNameEnemies) {
         loadWalls(FileNameWalls);
@@ -38,6 +39,8 @@ class Scene{
             
             Gegners[i] = new Enemy(new PVector(PosX,PosY),Waende);
         }
+        setPlayer(Play);
+        enemyAmount = Gegners.length;
         
     }
     
@@ -66,6 +69,7 @@ class Scene{
         for (Enemy Gegner : Gegners) {
             Gegner.Waffe.ammo = Gegner.Waffe.maxAmmo;
             Gegner.isAlive = true;
+            Gegner.hp = 10;
         }  
     }
     

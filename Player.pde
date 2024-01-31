@@ -17,7 +17,7 @@ class Player{
     Player(Wall[] Waende) {
         //Position auf Bildschirmmitte legen und Farbe festlegen
         isAlive = true;
-        hp = 100;
+        hp = 30;
         x = width / 2;
         y = height / 2;
         Origin = new PVector(worldCamera.Pos.x + height / 2,worldCamera.Pos.y + height / 2);    
@@ -30,7 +30,7 @@ class Player{
         Waffen = new Weapon[3]; //Arraylänge definieren
         //Konstruktor -> String Name, int maxAmmo, int projSpeed, 
         //int cad,float reloadTime, PVector Origin, boolean isHostile, Wall[] Walls
-        Waffen[0] = new Weapon("Waffe",30,10,5,50,Origin,false,CurScene.getWalls(),5);
+        Waffen[0] = new Weapon("Waffe",30,15,5,50,Origin,false,CurScene.getWalls(),10);
         Waffen[1] = new Weapon("Waffe2",10,20,30,60,Origin,false,CurScene.getWalls(),10);
         Waffen[2] = new Weapon("Waffe3",5,40,70,100,Origin,false,CurScene.getWalls(),30); 
     }
@@ -39,6 +39,7 @@ class Player{
     void render() {
         //Spieler zeichnen, aktuelle fill Farbe speichern und später zurücksetzen
         if (hp <= 0) {
+            hp = 0;
             farbe = (color(0));
             isAlive = false;
         }
@@ -56,7 +57,6 @@ class Player{
         image(img,0,0,size * 1.5,size * 1.5);
         //rect(0,0,size,size);
         fill(curcol);
-        println(getCollision(worldCamera.Pos));
         for (Weapon Waffe : Waffen) {
             Waffe.Origin = new PVector(worldCamera.Pos.x + width / 2,worldCamera.Pos.y + height / 2);
         }
@@ -131,6 +131,13 @@ class Player{
         EnemyProj = Bullets;
     }
     
+    void setWalls(Wall[] Walls) {
+        this.Waende = Walls;
+        for (Weapon Waffe : Waffen) {
+            Waffe.setWalls(Walls);
+        }
+    }
+    
     void checkHit() {
         for (Projectile Bullet : EnemyProj) {
             if (Bullet.isActive) {
@@ -139,7 +146,6 @@ class Player{
                 float disY = worldCamera.Pos.y + height / 2 - Bullet.Pos.y;
                 if (sqrt(sq(disX) + sq(disY)) < size / 2 && Bullet.isActive) {
                     hp = hp - Bullet.damage;
-                    println("AUA");
                     Bullet.init();
                 }
             }

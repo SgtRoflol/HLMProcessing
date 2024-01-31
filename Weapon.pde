@@ -87,4 +87,10 @@ class Weapon{
     Projectile[] getBullets() {
         return Bullets;
     }
+    
+    void setWalls(Wall[] Walls) {
+        for (Projectile Bullet : Bullets) {
+            Bullet.setWalls(Walls);
+        }
+    }
 }

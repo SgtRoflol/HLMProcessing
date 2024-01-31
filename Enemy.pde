@@ -9,7 +9,7 @@ class Enemy{
     Weapon Waffe;
     
     Enemy(PVector Pos,Wall[] Walls) {
-        hp = 25;
+        hp = 10;
         this.Pos = Pos;
         isAlive = true;
         size = 50;
@@ -17,7 +17,7 @@ class Enemy{
         getWalls(Walls);
         //Konstruktor -> String Name, int maxAmmo, int projSpeed, 
         //int cad,float reloadTime, PVector Origin, boolean isHostile, Wall[] Walls,int damage
-        Waffe = new Weapon("Waffe",15,10,10,50,new PVector(Pos.x,Pos.y),true,Waende,7);
+        Waffe = new Weapon("Waffe",15,15,10,50,new PVector(Pos.x,Pos.y),true,Waende,10);
         Waffe.cooldown = 40;
     }
     
@@ -30,11 +30,12 @@ class Enemy{
     } 
     
     void render() {
-        checkHit();
+        
         if (hp <= 0) {
             isAlive = false;
         }
         if (isAlive) {
+            checkHit();
             fill(0,0,255);
             ellipse(Pos.x,Pos.y,size,size);
             if (isOnScreen() && !canSee()) { 
@@ -80,6 +81,9 @@ class Enemy{
                 Bullet.init();
             }
         }
+        if (hp <= 0) {
+            CurScene.enemyAmount--;
+        }
     }
     
     boolean canSee() {
@@ -107,11 +111,9 @@ class Enemy{
         // if ANY of the above are true, the line
         //has hit the rectangle
         if (left || right || top || bottom) {
-            println("HUHU");
             return true;
             
         }
-        println("Huch");
         return false;
         
     }
