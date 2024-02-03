@@ -8,11 +8,13 @@ Projectile[] PlayerProj; //Alle Spielerprojektile
 Projectile[] EnemyProj;
 int curLevel;
 String PackagePath;
+Goal Ziel;
 PImage background;
 
 
 void setup() {
 
+Ziel = new Goal(width/2-70 ,height/2, 180,100);
 curLevel = 1;
 PackagePath= sketchPath();
 loadScene(PackagePath, curLevel);
@@ -39,12 +41,16 @@ void draw() {
     }
     CurScene.render();
     //WorldCamera Ende
+    Ziel.render();
     popMatrix();
     Overlay.render(); 
     fill(255);
     //Spieler zur Maus drehen
     Play.rot();  
 
+if(Ziel.playerOnTop()){
+    loadScene(PackagePath, ++curLevel);
+}
     println("MouseX " + mouseX);
     println("MouseY " + mouseY); 
 }

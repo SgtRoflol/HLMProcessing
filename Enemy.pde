@@ -43,7 +43,7 @@ class Enemy{
             checkHit();
             fill(0,0,255);
             rectMode(CENTER);
-            ellipse(Pos.x,Pos.y,size,size);
+            rect(Pos.x,Pos.y,size,size);
             if (isOnScreen() && !canSee() && Play.isAlive) { 
                 Waffe.setTarget(width / 2 + worldCamera.Pos.x + int(random(-sway,sway)),height / 2 + worldCamera.Pos.y+int(random(-sway,sway)));
                 Waffe.isShooting = true;
@@ -51,7 +51,7 @@ class Enemy{
                 if(sway > 0){
                 sway -= 2;
                 }
-                //line(Pos.x,Pos.y,width / 2 + worldCamera.Pos.x,height / 2 + worldCamera.Pos.y);
+                line(Pos.x,Pos.y,width / 2 + worldCamera.Pos.x,height / 2 + worldCamera.Pos.y);
             }
             else{
                 Waffe.cooldown = int(random(10, 30));

@@ -25,11 +25,13 @@ Projectile[] PlayerProj; //Alle Spielerprojektile
 Projectile[] EnemyProj;
 int curLevel;
 String PackagePath;
+Goal Ziel;
 PImage background;
 
 
 public void setup() {
 
+Ziel = new Goal(width/2-50 ,height/2, 200,100);
 curLevel = 1;
 PackagePath= sketchPath();
 loadScene(PackagePath, curLevel);
@@ -56,12 +58,16 @@ public void draw() {
     }
     CurScene.render();
     //WorldCamera Ende
+    Ziel.render();
     popMatrix();
     Overlay.render(); 
     fill(255);
     //Spieler zur Maus drehen
     Play.rot();  
 
+if(Ziel.playerOnTop()){
+    loadScene(PackagePath, ++curLevel);
+}
     println("MouseX " + mouseX);
     println("MouseY " + mouseY); 
 }
@@ -205,7 +211,7 @@ class Enemy{
             checkHit();
             fill(0,0,255);
             rectMode(CENTER);
-            ellipse(Pos.x,Pos.y,size,size);
+            rect(Pos.x,Pos.y,size,size);
             if (isOnScreen() && !canSee() && Play.isAlive) { 
                 Waffe.setTarget(width / 2 + worldCamera.Pos.x + PApplet.parseInt(random(-sway,sway)),height / 2 + worldCamera.Pos.y+PApplet.parseInt(random(-sway,sway)));
                 Waffe.isShooting = true;
@@ -213,7 +219,7 @@ class Enemy{
                 if(sway > 0){
                 sway -= 2;
                 }
-                //line(Pos.x,Pos.y,width / 2 + worldCamera.Pos.x,height / 2 + worldCamera.Pos.y);
+                line(Pos.x,Pos.y,width / 2 + worldCamera.Pos.x,height / 2 + worldCamera.Pos.y);
             }
             else{
                 Waffe.cooldown = PApplet.parseInt(random(10, 30));
@@ -309,6 +315,35 @@ class Enemy{
         return false;
     }
 
+}
+class Goal{
+    PVector Pos;
+    int w;
+    int h;
+
+Goal(int x, int y, int w, int h){
+    Pos = new PVector(x,y);
+    this.w = w;
+    this.h = h;
+}
+
+public void render(){
+    if(CurScene.enemyAmount == 0){
+        fill(255,255,0);
+        rect(Pos.x,Pos.y,w,h);
+    }
+}
+
+
+    public boolean playerOnTop(){
+        if(CurScene.enemyAmount == 0){
+                if (Play.x + worldCamera.Pos.x >= Pos.x && Play.x+ worldCamera.Pos.x  <= Pos.x + w && 
+                    Play.y +worldCamera.Pos.y>= Pos.y && Play.y + worldCamera.Pos.y <= Pos.y + h) {
+                    return true;
+                    }
+        }
+        return false;
+    }
 }
 class Hud{
     Hud() {
