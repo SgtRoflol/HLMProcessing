@@ -13,6 +13,7 @@ class Player{
     PImage img;
     PImage dead;
     boolean isAlive;
+    int sway;
     
     Player(Wall[] Waende) {
         //Position auf Bildschirmmitte legen und Farbe festlegen
@@ -31,7 +32,7 @@ class Player{
         //Konstruktor -> String Name, int maxAmmo, int projSpeed, 
         //int cad,float reloadTime, PVector Origin, boolean isHostile, Wall[] Walls
         Waffen[0] = new Weapon("Waffe",30,15,5,50,Origin,false,CurScene.getWalls(),10);
-        Waffen[1] = new Weapon("Waffe2",10,20,30,60,Origin,false,CurScene.getWalls(),10);
+        Waffen[1] = new Weapon("Waffe2",10,20,30,60,Origin,false,CurScene.getWalls(),15);
         Waffen[2] = new Weapon("Waffe3",5,40,70,100,Origin,false,CurScene.getWalls(),30); 
     }
     
@@ -48,7 +49,12 @@ class Player{
             image(dead,0,0,size * 2,size * 2);
             return;
         }
-        
+        sway = 30;
+        for(boolean b : keys){
+            if(b){
+                sway = 100;
+            }
+        }
         checkHit();
         color curcol = g.fillColor;
         fill(farbe);
@@ -66,7 +72,7 @@ class Player{
     void renderWeapons() {
         for (Weapon Waffe : Waffen) {
             Waffe.render();
-            Waffe.setTarget(worldCamera.Pos.x + mouseX,worldCamera.Pos.y + mouseY);     
+            Waffe.setTarget(worldCamera.Pos.x + mouseX+int(random(-sway,sway)),worldCamera.Pos.y + mouseY+int(random(-sway,sway)));     
         }
     }
     

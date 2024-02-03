@@ -69,7 +69,7 @@ class Scene{
         for (Enemy Gegner : Gegners) {
             Gegner.Waffe.ammo = Gegner.Waffe.maxAmmo;
             Gegner.isAlive = true;
-            Gegner.hp = 10;
+            Gegner.hp = Gegner.maxHp;
         }  
     }
     

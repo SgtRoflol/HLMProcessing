@@ -7,6 +7,7 @@ class Projectile{
     boolean isHostile;
     PVector Origin;
     int damage;
+    int lifetime;
     
     Projectile(float speed, boolean hostile, PVector Origin, Wall[] Walls, int damage) {
         this.speed = speed;
@@ -17,6 +18,7 @@ class Projectile{
         dir = new PVector();
         this.damage = damage;
         init();
+        lifetime = 0;
     }
     
     void setWalls(Wall[] Walls) {
@@ -26,6 +28,7 @@ class Projectile{
     void init() {
         isActive = false;
         Pos = Origin;
+        lifetime = 0;
     }
     
     void spawn(float x, float y) {
@@ -40,12 +43,22 @@ class Projectile{
     }
     
     void render() {
+        if (!isHostile && isActive) {
+            lifetime++;
+        {
+                if (lifetime >= 200) {
+                    init();
+                    return;
+                }
+            }
+        }
         ellipseMode(CENTER);
         color curcol = g.fillColor;
         fill(255, 255, 0);
         if (!isOnScreen()) {
             isActive = false;
         }
+        
         else if (isActive) {       
             if (checkCollision()) {
                 isActive = false;

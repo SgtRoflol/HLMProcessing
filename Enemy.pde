@@ -1,5 +1,7 @@
 class Enemy{
+    float angle;
     int hp;
+    int maxHp;
     boolean isAlive;
     PVector Pos;
     Projectile[] PlayerProj;
@@ -7,9 +9,12 @@ class Enemy{
     Wall[] Waende;
     Player Play;
     Weapon Waffe;
+    int sway;
     
     Enemy(PVector Pos,Wall[] Walls) {
-        hp = 10;
+        sway = 200;
+        maxHp = 30;
+        hp = maxHp;
         this.Pos = Pos;
         isAlive = true;
         size = 50;
@@ -37,17 +42,25 @@ class Enemy{
         if (isAlive) {
             checkHit();
             fill(0,0,255);
+            rectMode(CENTER);
             ellipse(Pos.x,Pos.y,size,size);
-            if (isOnScreen() && !canSee()) { 
-                Waffe.setTarget(width / 2 + worldCamera.Pos.x,height / 2 + worldCamera.Pos.y);
+            if (isOnScreen() && !canSee() && Play.isAlive) { 
+                Waffe.setTarget(width / 2 + worldCamera.Pos.x + int(random(-sway,sway)),height / 2 + worldCamera.Pos.y+int(random(-sway,sway)));
                 Waffe.isShooting = true;
                 Waffe.shoot();
-                line(Pos.x,Pos.y,width / 2 + worldCamera.Pos.x,height / 2 + worldCamera.Pos.y);
+                if(sway > 0){
+                sway -= 2;
+                }
+                //line(Pos.x,Pos.y,width / 2 + worldCamera.Pos.x,height / 2 + worldCamera.Pos.y);
             }
             else{
-                Waffe.cooldown = 10;
+                Waffe.cooldown = int(random(10, 30));
                 Waffe.isShooting = false;
+                if(sway < 120){
+                    sway += 2;
+                }
             }
+
         }
         
         Waffe.render();
@@ -78,7 +91,7 @@ class Enemy{
             float disY = Pos.y - Bullet.Pos.y;
             if (sqrt(sq(disX) + sq(disY)) < size / 2 && Bullet.isActive && isAlive) {
                 hp -= Bullet.damage;
-                Bullet.init();
+                 Bullet.init();
             }
         }
         if (hp <= 0) {
@@ -133,4 +146,5 @@ class Enemy{
         }
         return false;
     }
+
 }

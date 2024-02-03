@@ -6,28 +6,20 @@ Scene CurScene;
 Hud Overlay;
 Projectile[] PlayerProj; //Alle Spielerprojektile
 Projectile[] EnemyProj;
+int curLevel;
+String PackagePath;
+PImage background;
 
 
 void setup() {
-    size(800, 800,P2D);
-    //Framerate und Anti-Aliasing setzen
+
+curLevel = 1;
+PackagePath= sketchPath();
+loadScene(PackagePath, curLevel);
+size(800, 800,P2D);
     smooth(4);
     frameRate(60);
-    CurScene = new Scene("Walls.json","Enemies.json");
-    worldCamera = new Camera(); // Worldcamera wird genutzt, um Level größer als der Screen erstellen zu können
-    Play = new Player(CurScene.getWalls()); //Spieler instanziieren
-    curWeapon = Play.Waffen[0]; // Aktuelle Waffe
-    PlayerProj = new Projectile[0];
-    for (Weapon Waffe : Play.Waffen) {
-        PlayerProj = (Projectile[])concat(PlayerProj, Waffe.getBullets());
-    }
-    getEnemyProj();
-    
-    
-    Play.setProjectiles(EnemyProj);
-    Overlay = new Hud();
-    CurScene.setPlayer(Play);
-    
+    background = loadImage("background.png");
 }
 
 void draw() {
@@ -36,6 +28,11 @@ void draw() {
     pushMatrix();
     translate( -worldCamera.Pos.x, -worldCamera.Pos.y); //Worldcam verschiebt Achsen um Bewegungswert
     worldCamera.draw();
+    for(int i = 0; i< 1500; i = i + background.width){
+        for(int j = 0; j < 1500; j = j + background.height){
+            image(background,i,j,background.width,background.height);
+        }
+    }
     Play.renderWeapons();
     if (Play.isAlive) {
         curWeapon.shoot();
@@ -46,7 +43,10 @@ void draw() {
     Overlay.render(); 
     fill(255);
     //Spieler zur Maus drehen
-    Play.rot();   
+    Play.rot();  
+
+    println("MouseX " + mouseX);
+    println("MouseY " + mouseY); 
 }
 void mousePressed() {
     curWeapon.isShooting = true; //Wird gesetzt um beständiges Schießen bei Halten der Maustaste zu ermöglichen
@@ -58,35 +58,25 @@ void mouseReleased() {
 
 void keyPressed() {
     //Zwischen Waffen wechseln
+    keys[keyCode] = true;
     Play.switchWeapons();
     
     //Es kann nur nachgeladen werden, wenn geschossen wird, ausserdem kann einige Zeit nicht geschossen
     //werden, umdauerladen und Schießen zu vermeiden
+    
+    if(Play.isAlive){
     if (!curWeapon.isShooting) {
         curWeapon.reload();
     }
-    
-    if (key == 'g') {
-        worldCamera.Pos.x = 0;
-        worldCamera.Pos.y = 0;
-        Play.hp = 30;
-        CurScene.init();
-        Play.isAlive = true;
-        CurScene.enemyAmount = CurScene.Gegners.length;
     }
-    keys[keyCode] = true;
+    else{
+    if (key == 'r') {
+        initScene();
+    }
+    }
     
     if (key == 'k') {
-        CurScene = new Scene("Walls2.json","Enemies2.json");
-        worldCamera.Pos.x = 0;
-        worldCamera.Pos.y = 0;
-        Play.hp = 30;
-        CurScene.init();
-        Play.isAlive = true;
-        CurScene.enemyAmount = CurScene.Gegners.length;
-        getEnemyProj();
-        Play.setProjectiles(EnemyProj);
-        Play.setWalls(CurScene.getWalls());
+        loadScene(PackagePath, ++curLevel);
     }
 }
 void keyReleased() {
@@ -98,4 +88,36 @@ void getEnemyProj() {
     for (Enemy Gegner : CurScene.Gegners) {
         EnemyProj = (Projectile[])concat(EnemyProj, Gegner.Waffe.getBullets());
     }
+}
+
+
+
+void loadScene(String path, int index){
+    String LevelPath =path +"/data/Packages/Package1/Level"+ str(index) +"/";
+    CurScene = new Scene( LevelPath+"Walls.json",LevelPath+"Enemies.json");
+    worldCamera = new Camera(); // Worldcamera wird genutzt, um Level größer als der Screen erstellen zu können
+    Play = new Player(CurScene.getWalls()); //Spieler instanziieren
+    curWeapon = Play.Waffen[0]; // Aktuelle Waffe
+    PlayerProj = new Projectile[0];
+    initScene();
+}
+
+void initScene(){
+        worldCamera.Pos.x = 0;
+        worldCamera.Pos.y = 0;
+        Play.hp = 30;
+        CurScene.init();
+        Play.isAlive = true;
+        CurScene.enemyAmount = CurScene.Gegners.length;
+
+    for (Weapon Waffe : Play.Waffen) {
+        PlayerProj = (Projectile[])concat(PlayerProj, Waffe.getBullets());
+        Waffe.ammo = Waffe.maxAmmo;
+    }
+    getEnemyProj();
+    Play.setProjectiles(EnemyProj);
+    Overlay = new Hud();
+    CurScene.setPlayer(Play);
+    Play.setWalls(CurScene.getWalls());
+
 }

@@ -2,20 +2,40 @@ class Wall{
     PVector Pos;
     int w;
     int h;
+    PImage img;
     
     Wall(PVector Pos, int w, int h) {
         this.Pos = Pos;
         this.w = w;
         this.h = h;
+        if(w > h){
+            img = loadImage("wallVertical.png");
+        }
+        else{
+            img = loadImage("wallHorizontal.png");
+        }
     }
     void render() {
         fill(0,255,0);
         rectMode(CORNER);
         rect(Pos.x,Pos.y,w,h);
+        imageMode(CORNER);
+        if(w > h){
+            img.resize(h,h);
+            for(int i = 0; i < w; i = i + img.width){
+        image(img,Pos.x+i,Pos.y,img.width,img.height);
+            }
+        }
+        else{
+                img.resize(w,w);
+                for(int i = 0; i < h; i = i + img.height){
+        image(img,Pos.x,Pos.y+i,img.width,img.height);
+            }
+        }
         fill(0);
         stroke(0);
-        line(Pos.x,Pos.y,Pos.x + w,Pos.y + h);
-        line(Pos.x,Pos.y + h,Pos.x + w,Pos.y);
+        //line(Pos.x,Pos.y,Pos.x + w,Pos.y + h);
+        //line(Pos.x,Pos.y + h,Pos.x + w,Pos.y);
         
     }
     
