@@ -66,9 +66,7 @@ void keyPressed() {
     //Zwischen Waffen wechseln
     keys[keyCode] = true;
     Play.switchWeapons();
-    
-    //Es kann nur nachgeladen werden, wenn geschossen wird, ausserdem kann einige Zeit nicht geschossen
-    //werden, umdauerladen und Schießen zu vermeiden
+
     
     if(Play.isAlive){
     if (!curWeapon.isShooting) {

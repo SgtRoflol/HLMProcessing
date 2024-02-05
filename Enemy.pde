@@ -10,14 +10,16 @@ class Enemy{
     Player Play;
     Weapon Waffe;
     int sway;
+    PImage img;
     
     Enemy(PVector Pos,Wall[] Walls) {
+        img = loadImage("Enemy.png");
         sway = 200;
         maxHp = 30;
         hp = maxHp;
         this.Pos = Pos;
         isAlive = true;
-        size = 50;
+        size = 70;
         this.Play = Play;
         getWalls(Walls);
         //Konstruktor -> String Name, int maxAmmo, int projSpeed, 
@@ -42,8 +44,17 @@ class Enemy{
         if (isAlive) {
             checkHit();
             fill(0,0,255);
+            pushMatrix();
+            if(!canSee() && isOnScreen()){
+            angle = atan2(Pos.x - (worldCamera.Pos.x+width/2), Pos.y - (worldCamera.Pos.y+height/2));
+            }
             rectMode(CENTER);
-            rect(Pos.x,Pos.y,size,size);
+             translate(Pos.x,Pos.y);
+            rotate(-angle - HALF_PI);
+            imageMode(CENTER);
+            image(img,0,0,size,size);
+
+            popMatrix();
             if (isOnScreen() && !canSee() && Play.isAlive) { 
                 Waffe.setTarget(width / 2 + worldCamera.Pos.x + int(random(-sway,sway)),height / 2 + worldCamera.Pos.y+int(random(-sway,sway)));
                 Waffe.isShooting = true;
@@ -51,7 +62,7 @@ class Enemy{
                 if(sway > 0){
                 sway -= 2;
                 }
-                line(Pos.x,Pos.y,width / 2 + worldCamera.Pos.x,height / 2 + worldCamera.Pos.y);
+               // line(Pos.x,Pos.y,width / 2 + worldCamera.Pos.x,height / 2 + worldCamera.Pos.y);
             }
             else{
                 Waffe.cooldown = int(random(10, 30));
@@ -146,5 +157,6 @@ class Enemy{
         }
         return false;
     }
+
 
 }

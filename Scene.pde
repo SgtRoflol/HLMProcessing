@@ -70,6 +70,7 @@ class Scene{
             Gegner.Waffe.ammo = Gegner.Waffe.maxAmmo;
             Gegner.isAlive = true;
             Gegner.hp = Gegner.maxHp;
+            Gegner.angle = 0;
         }  
     }
     
