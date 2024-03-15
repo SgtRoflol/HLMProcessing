@@ -46,12 +46,15 @@ class Player{
         }
         if (!isAlive) {
             imageMode(CENTER);
+            pushMatrix();
+            rotate(PI);
             image(dead,0,0,size * 2,size * 2);
+            popMatrix();
             return;
         }
         sway = 30;
-        for(boolean b : keys){
-            if(b){
+        for (boolean b : keys) {
+            if (b) {
                 sway = 100;
             }
         }
@@ -72,7 +75,7 @@ class Player{
     void renderWeapons() {
         for (Weapon Waffe : Waffen) {
             Waffe.render();
-            Waffe.setTarget(worldCamera.Pos.x + mouseX+int(random(-sway,sway)),worldCamera.Pos.y + mouseY+int(random(-sway,sway)));     
+            Waffe.setTarget(worldCamera.Pos.x + mouseX + int(random( -sway,sway)),worldCamera.Pos.y + mouseY + int(random( -sway,sway)));     
         }
     }
     
@@ -121,14 +124,13 @@ class Player{
     
     boolean getCollision(PVector Pos) {
         
-        for (Wall Wand : Waende) {
-            for (Wall Wall : Waende) {
-                if (x + Pos.x + size / 2 >= Wall.Pos.x && x + Pos.x - size / 2 <= Wall.Pos.x + Wall.w && 
-                    y + Pos.y + size / 2 >= Wall.Pos.y && y + Pos.y - size / 2 <= Wall.Pos.y + Wall.h) {
-                    return true;
-                } 
-            }
+        for (Wall Wall : Waende) {
+            if (x + Pos.x + size / 2 >= Wall.Pos.x && x + Pos.x - size / 2 <= Wall.Pos.x + Wall.w && 
+                y + Pos.y + size / 2 >= Wall.Pos.y && y + Pos.y - size / 2 <= Wall.Pos.y + Wall.h) {
+                return true;
+            } 
         }
+        
         return false;
     }
     

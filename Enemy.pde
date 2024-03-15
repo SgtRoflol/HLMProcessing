@@ -45,33 +45,33 @@ class Enemy{
             checkHit();
             fill(0,0,255);
             pushMatrix();
-            if(!canSee() && isOnScreen()){
-            angle = atan2(Pos.x - (worldCamera.Pos.x+width/2), Pos.y - (worldCamera.Pos.y+height/2));
+            if (!canSee() && isOnScreen()) {
+                angle = atan2(Pos.x - (worldCamera.Pos.x + width / 2), Pos.y - (worldCamera.Pos.y + height / 2));
             }
             rectMode(CENTER);
-             translate(Pos.x,Pos.y);
-            rotate(-angle - HALF_PI);
+            translate(Pos.x,Pos.y);
+            rotate( -angle - HALF_PI);
             imageMode(CENTER);
             image(img,0,0,size,size);
-
+            
             popMatrix();
             if (isOnScreen() && !canSee() && Play.isAlive) { 
-                Waffe.setTarget(width / 2 + worldCamera.Pos.x + int(random(-sway,sway)),height / 2 + worldCamera.Pos.y+int(random(-sway,sway)));
+                Waffe.setTarget(width / 2 + worldCamera.Pos.x + int(random( -sway,sway)),height / 2 + worldCamera.Pos.y + int(random( -sway,sway)));
                 Waffe.isShooting = true;
                 Waffe.shoot();
-                if(sway > 0){
-                sway -= 2;
+                if (sway > 0) {
+                    sway -= 2;
                 }
-               // line(Pos.x,Pos.y,width / 2 + worldCamera.Pos.x,height / 2 + worldCamera.Pos.y);
+                // line(Pos.x,Pos.y,width / 2 + worldCamera.Pos.x,height / 2 + worldCamera.Pos.y);
             }
             else{
                 Waffe.cooldown = int(random(10, 30));
                 Waffe.isShooting = false;
-                if(sway < 120){
+                if (sway < 120) {
                     sway += 2;
                 }
             }
-
+            
         }
         
         Waffe.render();
@@ -102,7 +102,7 @@ class Enemy{
             float disY = Pos.y - Bullet.Pos.y;
             if (sqrt(sq(disX) + sq(disY)) < size / 2 && Bullet.isActive && isAlive) {
                 hp -= Bullet.damage;
-                 Bullet.init();
+                Bullet.init();
             }
         }
         if (hp <= 0) {
@@ -157,6 +157,6 @@ class Enemy{
         }
         return false;
     }
-
-
+    
+    
 }

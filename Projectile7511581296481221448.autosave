@@ -8,7 +8,6 @@ class Projectile{
     PVector Origin;
     int damage;
     int lifetime;
-    PVector Target;
     
     Projectile(float speed, boolean hostile, PVector Origin, Wall[] Walls, int damage) {
         this.speed = speed;
@@ -36,7 +35,7 @@ class Projectile{
         init();
         //Normalisierter Differenzvektor zwischen Position und Ziel wird als
         //Richtung definiert
-        Target = new PVector(x,y);
+        PVector Target = new PVector(x,y);
         dir = PVector.sub(Target,Pos);
         dir.normalize();
         dir.mult(speed);
@@ -69,11 +68,10 @@ class Projectile{
                 Pos = Pos.add(dir);
                 rectMode(CENTER);
                 pushMatrix();
-                float angle = atan2(Pos.x - Target.x, Pos.y - Target.y);
+                int angle = atan2(Pos.x - dir, Pos.y - dir);
                 translate(Pos.x, Pos.y);
-                rotate( -angle);
-                rect(0, 0, 4,15);   
-                popMatrix();   
+                rotate( -angle - HALF_PI);
+                rect(0, 0, 5,15);  
             } 
             //Farbe wird auf vorherigen Wert zurückgesett
             fill(curcol);

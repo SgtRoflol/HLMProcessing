@@ -60,6 +60,9 @@ class Weapon{
             return;
         }
         if (isShooting && cooldown == 0 && ammo != 0) {
+            if (!isHostile && ammo != 0) {
+                worldCamera.screenshake(5);
+            }
             //Überprüfen, ob aktuell noch ein Projektil nicht geschossen wurde und Munition übrig ist
             for (Projectile Bullet : Bullets) {
                 if (!Bullet.isActive) {
@@ -69,8 +72,8 @@ class Weapon{
                     cooldown = cad;
                     break;
                 }
-                
             }
+            
         }
         
     }
