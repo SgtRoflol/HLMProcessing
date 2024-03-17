@@ -2,9 +2,11 @@ class Scene{
     Wall[] Waende;
     Enemy[] Gegners;
     PVector StartingPos;
+    String FileNameEnemies;
     int enemyAmount;
     
     Scene(String FileNameWalls,String FileNameEnemies) {
+        this.FileNameEnemies = FileNameEnemies;
         loadWalls(FileNameWalls);
         loadEnemies(FileNameEnemies);
         StartingPos = new PVector(0,0);
@@ -66,12 +68,7 @@ class Scene{
     }
     
     void init() {
-        for (Enemy Gegner : Gegners) {
-            Gegner.Waffe.ammo = Gegner.Waffe.maxAmmo;
-            Gegner.isAlive = true;
-            Gegner.hp = Gegner.maxHp;
-            Gegner.angle = 0;
-        }  
+        loadEnemies(FileNameEnemies);
     }
     
 }

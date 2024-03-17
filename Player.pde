@@ -31,7 +31,7 @@ class Player{
         Waffen = new Weapon[3]; //Arraylänge definieren
         //Konstruktor -> String Name, int maxAmmo, int projSpeed, 
         //int cad,float reloadTime, PVector Origin, boolean isHostile, Wall[] Walls
-        Waffen[0] = new Weapon("Waffe",30,15,5,50,Origin,false,CurScene.getWalls(),10);
+        Waffen[0] = new Weapon("Waffe",30,25,5,50,Origin,false,CurScene.getWalls(),10);
         Waffen[1] = new Weapon("Waffe2",10,20,30,60,Origin,false,CurScene.getWalls(),15);
         Waffen[2] = new Weapon("Waffe3",5,40,70,100,Origin,false,CurScene.getWalls(),30); 
     }
@@ -155,6 +155,21 @@ class Player{
                 if (sqrt(sq(disX) + sq(disY)) < size / 2 && Bullet.isActive) {
                     hp = hp - Bullet.damage;
                     Bullet.init();
+                    if (hp <= 0) {
+                        int sound = int(random(0,4));
+                        if (sound == 0) {
+                            osc.send(hitMessage,meineAdresse);
+                        }
+                        if (sound == 1) {
+                            osc.send(hitMessage1,meineAdresse);
+                        }
+                        if (sound == 2) {
+                            osc.send(hitMessage2,meineAdresse);
+                        }
+                        if (sound == 3) {
+                            osc.send(hitMessage3,meineAdresse);
+                        }
+                    }
                 }
             }
         }

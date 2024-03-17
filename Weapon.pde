@@ -62,6 +62,10 @@ class Weapon{
         if (isShooting && cooldown == 0 && ammo != 0) {
             if (!isHostile && ammo != 0) {
                 worldCamera.screenshake(5);
+                osc.send(shotMessage,meineAdresse);
+            }
+            if (isHostile) {
+                osc.send(enemyShotMessage,meineAdresse);
             }
             //Überprüfen, ob aktuell noch ein Projektil nicht geschossen wurde und Munition übrig ist
             for (Projectile Bullet : Bullets) {
@@ -80,7 +84,8 @@ class Weapon{
     
     void reload() {
         //Munition zurücksetzen und Nachladecooldown setzen
-        if (key == 'r') {
+        if (key == 'r') {                
+            osc.send(reloadMessage,meineAdresse);
             cooldown = reloadTime;
             ammo = maxAmmo;
         }

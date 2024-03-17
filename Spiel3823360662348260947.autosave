@@ -6,10 +6,6 @@ NetAddress meineAdresse = new NetAddress("127.0.0.1", 12346);
 OscMessage shotMessage = new OscMessage("shot");
 OscMessage enemyShotMessage = new OscMessage("enemyShot");
 OscMessage reloadMessage = new OscMessage("reload");
-OscMessage hitMessage = new OscMessage("hit");
-OscMessage hitMessage1 = new OscMessage("hit1");
-OscMessage hitMessage2 = new OscMessage("hit2");
-OscMessage hitMessage3 = new OscMessage("hit3");
 
 Camera worldCamera; //Kamera
 boolean[] keys = new boolean[160];

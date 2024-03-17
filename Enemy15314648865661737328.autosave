@@ -11,10 +11,8 @@ class Enemy{
     Weapon Waffe;
     int sway;
     PImage img;
-    PVector lastSeen;
     
     Enemy(PVector Pos,Wall[] Walls) {
-        lastSeen = new PVector(0,0);
         img = loadImage("Enemy.png");
         sway = 200;
         maxHp = 30;
@@ -39,19 +37,16 @@ class Enemy{
     } 
     
     void render() {
-        
+        followPlayer();
         if (hp <= 0) {
             isAlive = false;
         }
         if (isAlive) {
-            move();
             checkHit();
             fill(0,0,255);
             pushMatrix();
             if (!canSee() && isOnScreen()) {
                 angle = atan2(Pos.x - (worldCamera.Pos.x + width / 2), Pos.y - (worldCamera.Pos.y + height / 2));
-                lastSeen.x = Play.x + worldCamera.Pos.x;
-                lastSeen.y = Play.y + worldCamera.Pos.y;
             }
             rectMode(CENTER);
             translate(Pos.x,Pos.y);
@@ -76,10 +71,6 @@ class Enemy{
                     sway += 2;
                 }
             }
-            
-        }
-        else{
-            //Death image here
             
         }
         
@@ -116,20 +107,6 @@ class Enemy{
         }
         if (hp <= 0) {
             CurScene.enemyAmount--;
-            int sound = int(random(0,4));
-            if (sound == 0) {
-                osc.send(hitMessage,meineAdresse);
-            }
-            if (sound == 1) {
-                osc.send(hitMessage1,meineAdresse);
-            }
-            if (sound == 2) {
-                osc.send(hitMessage2,meineAdresse);
-            }
-            if (sound == 3) {
-                osc.send(hitMessage3,meineAdresse);
-            }
-            
         }
     }
     
@@ -181,31 +158,22 @@ class Enemy{
         return false;
     }
     
-    void move() {
-        if (lastSeen.x != 0 && lastSeen.y != 0 && Play.isAlive) {
-            //get distance vector between enemy position and player position
-            PVector distance = new PVector(lastSeen.x - Pos.x,lastSeen.y - Pos.y);
-            //check if corners of enemy sprite would collide with wall
-            for (Wall Wand : Waende) {
-                if (Wand.isOnScreen()) {
-                    if (lineRect(Pos.x - size / 2,Pos.y - size / 2,Pos.x + size / 2,Pos.y + size / 2,Wand.Pos.x,Wand.Pos.y,Wand.w,Wand.h)) {
-                        lastSeen.x = 0;
-                        lastSeen.y = 0;
-                    }
+    //makes the enemy follow the player
+    void followPlayer() {
+        if (isAlive) {
+            //move weapon to enemy position
+
+            if (Play.isAlive) {
+                angle = atan2(Pos.x - Play.x, Pos.y - Play.y);
+                if (dist(Pos.x,Pos.y,Play.x,Play.y) > 200) {
+                    Pos.x += cos(angle) * 2;
+                    Pos.y += sin(angle) * 2;
+                }
+                else{
+                    Pos.x -= cos(angle) * 2;
+                    Pos.y -= sin(angle) * 2;
                 }
             }
-            if (distance.x <= 4  && distance.y <= 4) {
-                lastSeen.x = 0;
-                lastSeen.y = 0;
-            }
-            //normalize the vector
-            distance.normalize();
-            //multiply the vector by the speed
-            distance.mult(3);
-            //add the vector to the position
-            Pos.add(distance);
-            //move enemy bullets to enemy position
-            Waffe.Origin = Pos;
         }
     }
     

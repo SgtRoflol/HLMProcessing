@@ -1,7 +1,6 @@
 class Menu{
     Button[] Knoepfe;
     PImage Background;
-    PImage Heading;
     
     Menu() {
         Knoepfe = new Button[3];
@@ -12,15 +11,11 @@ class Menu{
         //button to exit game
         Knoepfe[2] = new Button(new PVector(width / 2 - 100, height / 2 + 100), 200, 50, color(0, 0, 255), "Exit Game");
         
-        
-        
         Background = loadImage("Background2.png");
-        Heading = loadImage("Heading.png");
     }
     
     void render() {
         image(Background, 0, 0, width, height);
-        image(Heading, 0, 0, width, height / 3);
         for (int i = 0; i < Knoepfe.length; i++) {
             Knoepfe[i].render();
         }
