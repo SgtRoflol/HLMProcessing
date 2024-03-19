@@ -15,89 +15,115 @@ class Enemy{
     PVector lastSeen;
     int hitIndex;
     
+    //Kostruktor
     Enemy(PVector Pos,Wall[] Walls) {
         lastSeen = new PVector(0,0);
+        //Bild für den Gegner
         img = loadImage("Enemy.png");
+        //Bilder für den Tod des Gegners
         hitImages[0] = loadImage("EnemyDead.png");
         hitImages[1] = loadImage("EnemyDead1.png");
         hitImages[2] = loadImage("EnemyDead2.png");
         hitImages[3] = loadImage("EnemyDead3.png");
+        //Bild auswählen für den Tod
         hitIndex = int(random(0,hitImages.length));
+        //Ungeauigkeit des Gegners
         sway = 200;
+        //Leben des Gegners
         maxHp = 30;
         hp = maxHp;
+        //Position des Gegners
         this.Pos = Pos;
-        isAlive = true;
-        size = 70;
-        this.Play = Play;
-        getWalls(Walls);
-        //Konstruktor -> String Name, int maxAmmo, int projSpeed, 
-        //int cad,float reloadTime, PVector Origin, boolean isHostile, Wall[] Walls,int damage
-        Waffe = new Weapon("Waffe",15,15,10,50,new PVector(Pos.x,Pos.y),true,Waende,10);
+        isAlive = true; //Der Gegner lebt
+        size = 70; //Größe des Gegners
+        this.Play = Play; //Spieler
+        getWalls(Walls); //Wände des Levels werden übergeben
+        //Waffe des Gegners;
+        Waffe = new Weapon("Waffe",7,15,10,50,new PVector(Pos.x,Pos.y),true,Waende,10);
+        //Cooldown der Waffe
         Waffe.cooldown = 40;
     }
     
+    //Wände des Levels werden übergeben
     void getWalls(Wall[] Walls) {
         this.Waende = Walls;
     }
-    
+    //Spieler wird übergeben
     void setPlayer(Player Play) {
         this.Play = Play;
     } 
     
+    //Gegner wird gerendert
     void render() {
         
         if (hp <= 0) {
+            //Gegner stirbt
             isAlive = false;
         }
+        //Wenn der Gegner lebt
         if (isAlive) {
+            //Gegner bewegt sich
             move();
-            checkHit();
-            fill(0,0,255);
-            pushMatrix();
+            checkHit(); //Überprüft ob der Gegner getroffen wurde
+            pushMatrix(); 
+            //Wenn der Gegner den Spieler sehen kann und auf dem Bildschirm ist
             if (!canSee() && isOnScreen()) {
+                //Berechnet den Winkel zwischen Spieler und Gegner
                 angle = atan2(Pos.x - (worldCamera.Pos.x + width / 2), Pos.y - (worldCamera.Pos.y + height / 2));
+                //Speichert die letze bekannte Position des Spielers
                 lastSeen.x = Play.x + worldCamera.Pos.x;
                 lastSeen.y = Play.y + worldCamera.Pos.y;
             }
+            //Zeichnet den Gegner
             rectMode(CENTER);
             translate(Pos.x,Pos.y);
+            //Dreht den Gegner in die Richtung des Spielers
             rotate( -angle - HALF_PI);
             imageMode(CENTER);
+            //Zeichnet das Bild des Gegners
             image(img,0,0,size,size);
             
             popMatrix();
+            //Wenn der Gegner den Spieler sehen kann und auf dem Bildschirm ist und der Spieler lebt
             if (isOnScreen() && !canSee() && Play.isAlive) { 
+                //Zielt auf den Spieler
                 Waffe.setTarget(width / 2 + worldCamera.Pos.x + int(random( -sway,sway)),height / 2 + worldCamera.Pos.y + int(random( -sway,sway)));
+                //Gegner schießt
                 Waffe.isShooting = true;
                 Waffe.shoot();
+                //Abweichung der Kugeln wird verringert je länger der Gegner schießt
                 if (sway > 0) {
                     sway -= 2;
                 }
-                // line(Pos.x,Pos.y,width / 2 + worldCamera.Pos.x,height / 2 + worldCamera.Pos.y);
             }
             else{
-                Waffe.cooldown = int(random(10, 30));
+                //Gegner schießt nicht
+                Waffe.cooldown = int(random(10, 30)); //Cooldown der Waffe wird zufällig gewählt
                 Waffe.isShooting = false;
-                if (sway < 120) {
+                //Abweichung der Kugeln wird erhöht wenn der Gegner den Spieler nicht sieht
+                if (sway < 120) { //Maximale Abweichung niedriger als Anfangsabweichung -> Gegner wird genauer
                     sway += 2;
                 }
             }
             
         }
         else{
+            //Gegner ist tot
             pushMatrix();
             translate(Pos.x,Pos.y);
+            //Dreht den Gegner weg von der Richtung des Spielers
             rotate( -angle + HALF_PI);
             imageMode(CENTER);
+            //Zeichnet das Bild des toten Gegners
             image(hitImages[hitIndex],0,0,hitImages[hitIndex].width * 2,hitImages[hitIndex].height * 2);
             popMatrix();
         }
-        
+        //Zeichnet die Kugeln des Gegners
         Waffe.render();
         
     }
     
+    //Überprüft ob der Gegner auf dem Bildschirm ist
     boolean isOnScreen() {
         if (Pos.x > worldCamera.Pos.x + width + size / 2 || Pos.x + size / 2 < worldCamera.Pos.x) {
             return false;
@@ -109,24 +135,34 @@ class Enemy{
         return true;
     }
     
+    //Kugeln des Spielers werden übergeben
     void setProjectiles(Projectile[] Bullets) {
         PlayerProj = Bullets;
     }
     
+    //Überprüft ob der Gegner getroffen wurde
     void checkHit() {
+        //Für jede Kugel des Spielers
         for (Projectile Bullet : PlayerProj) {
+            //Wenn die Kugel nicht aktiv ist wird sie übersprungen
             if (!Bullet.isActive) {
                 continue;
             }
+            //Berechnet die Distanz zwischen Kugel und Gegner
             float disX = Pos.x - Bullet.Pos.x;
             float disY = Pos.y - Bullet.Pos.y;
+            //Wenn die Distanz kleiner als der Radius des Gegners ist und die Kugel aktiv ist und der Gegner lebt
             if (sqrt(sq(disX) + sq(disY)) < size / 2 && Bullet.isActive && isAlive) {
+                //Gegner verliert Leben
                 hp -= Bullet.damage;
+                //Kugel wird zurückgesetzt
                 Bullet.init();
             }
         }
+        //Wenn der Gegner keine Leben mehr hat wird die Gesamtanzahl der Gegner verringert und ein Sound wird abgespielt
         if (hp <= 0) {
             CurScene.enemyAmount--;
+            //zufälligen Treffer Sound abspielen
             int sound = int(random(0,4));
             osc.send(hitMessages[sound], meineAdresse);
             
@@ -134,18 +170,21 @@ class Enemy{
     }
     
     boolean canSee() {
+        //Für jede Wand
         for (Wall Wand : Waende) {
+            //Wenn die Wand auf dem Bildschirm ist
             if (Wand.isOnScreen()) {
-                
+                //Wenn die Linie zwischen Spieler und Gegner die Wand schneidet sieht der Gegner den Spieler nicht
                 if (lineRect(width / 2 + worldCamera.Pos.x,height / 2 + worldCamera.Pos.y,Pos.x,Pos.y,Wand.Pos.x,Wand.Pos.y,Wand.w,Wand.h)) {
                     return true;
                 }
             } 
         }
+        //der Gegner sieht den Spieler
         return false;
     }
     
-    // LINE/RECTANGLE
+    // LINE / RECTANGLE
     boolean lineRect(float x1, float y1, float x2, float y2, float rx, float ry, float rw, float rh) {
         
         // check if the line has hit any of the rectangle's sides

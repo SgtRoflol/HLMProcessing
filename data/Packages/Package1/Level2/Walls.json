@@ -5,30 +5,29 @@
         "Width": 20,
         "Height": 105
     },
-
     {
         "PosX": 773,
         "PosY": 1213,
         "Width": 21,
-        "Height": 247 
+        "Height": 247
     },
     {
         "PosX": 648,
         "PosY": 1043,
         "Width": 20,
-        "Height": 105 
+        "Height": 105
     },
     {
         "PosX": 965,
         "PosY": 1289,
         "Width": 20,
-        "Height": 39 
+        "Height": 39
     },
     {
         "PosX": 44,
         "PosY": 898,
         "Width": 349,
-        "Height": 20 
+        "Height": 20
     },
     {
         "PosX": 44,
@@ -154,7 +153,7 @@
         "PosX": 1154,
         "PosY": 1269,
         "Width": 180,
-        "Height": 20 
+        "Height": 20
     },
     {
         "PosX": 965,
@@ -280,7 +279,7 @@
         "PosX": 1457,
         "PosY": 336,
         "Width": 21,
-        "Height": 1124 
+        "Height": 1124
     },
     {
         "PosX": 24,
@@ -299,5 +298,5 @@
         "PosY": 465,
         "Width": 20,
         "Height": 452
-    },
+    }
 ]

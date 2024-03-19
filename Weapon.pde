@@ -31,6 +31,7 @@ class Weapon{
         this.reloadTime = reloadTime;  
     }
     
+    //Zielen
     void setTarget(float targY,float targX) {
         this.targX = targY;
         this.targY = targX;
@@ -53,18 +54,21 @@ class Weapon{
     }
     
     void shoot() {
-        //Wenn Maus gedrückt wird und cooldown 0 ist, also geschossen werden soll UND darf
+        //Wenn die Waffe schießt und keine Munition mehr hat und feindlich ist -> Nachladen
         if (isShooting && ammo <= 0 && isHostile) {
             cooldown = reloadTime;
             ammo = maxAmmo;
             return;
         }
+        //Wenn die Waffe schießt und der Cooldown 0 ist und noch Munition übrig ist
         if (isShooting && cooldown == 0 && ammo != 0) {
             if (!isHostile && ammo != 0) {
+                //Kamera schütteln und SChussgeräusch senden wenn Spieler schießt
                 worldCamera.screenshake(5);
                 osc.send(shotMessage,meineAdresse);
             }
             if (isHostile) {
+                //Schussgeräusch senden wenn Gegner schießt
                 osc.send(enemyShotMessage,meineAdresse);
             }
             //Überprüfen, ob aktuell noch ein Projektil nicht geschossen wurde und Munition übrig ist
@@ -91,11 +95,12 @@ class Weapon{
         }
     }
     
-    
+    //Kugeln zurückgeben
     Projectile[] getBullets() {
         return Bullets;
     }
     
+    //Wände setzen
     void setWalls(Wall[] Walls) {
         for (Projectile Bullet : Bullets) {
             Bullet.setWalls(Walls);

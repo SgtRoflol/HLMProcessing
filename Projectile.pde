@@ -10,6 +10,7 @@ class Projectile{
     int lifetime;
     PVector Target;
     
+    //Konstruktor
     Projectile(float speed, boolean hostile, PVector Origin, Wall[] Walls, int damage) {
         this.speed = speed;
         isHostile = hostile;
@@ -22,12 +23,15 @@ class Projectile{
         lifetime = 0;
     }
     
+    //Wände werden gesetzt
     void setWalls(Wall[] Walls) {
         this.Walls = Walls;
     }
     
+    //Projektil wird initialisiert
     void init() {
         isActive = false;
+        //Position wird auf Ursprung gesetzt
         Pos = Origin;
         lifetime = 0;
     }
@@ -44,23 +48,27 @@ class Projectile{
     }
     
     void render() {
+        //Wenn das Projektil aktiv ist und feindlich, wird die Lebenszeit erhöht
         if (!isHostile && isActive) {
             lifetime++;
         {
+                //Wenn die Lebenszeit 200 erreicht, wird das Projektil zurückgesetzt
                 if (lifetime >= 200) {
                     init();
                     return;
                 }
             }
         }
-        ellipseMode(CENTER);
+        
         color curcol = g.fillColor;
         fill(255, 255, 0);
+        //Wenn das Projektil ausserhalb des Bildschirms ist, wird es deaktiviert
         if (!isOnScreen()) {
             isActive = false;
         }
         
         else if (isActive) {       
+            //Wenn das Projektil eine Wand trifft, wird es deaktiviert
             if (checkCollision()) {
                 isActive = false;
             }
@@ -69,9 +77,11 @@ class Projectile{
                 Pos = Pos.add(dir);
                 rectMode(CENTER);
                 pushMatrix();
+                //Projektil wird in Richtung Ziel gedreht
                 float angle = atan2(Pos.x - Target.x, Pos.y - Target.y);
                 translate(Pos.x, Pos.y);
                 rotate( -angle);
+                //Projektil wird gezeichnet
                 rect(0, 0, 4,15);   
                 popMatrix();   
             } 

@@ -2,14 +2,13 @@ class Player{
     float angle;
     float x;
     float y;
-    color farbe;
     int weapInd = 0;
     int size;
-    PVector Origin;
-    Wall[] Waende;
+    PVector Origin;//Ursprung der Waffen
+    Wall[] Waende; //Array mit allen Wänden
     Weapon[] Waffen; //Array mit allen Waffen
     int hp;
-    Projectile[] EnemyProj;
+    Projectile[] EnemyProj; //Array mit allen Gegnerprojektilen
     PImage img;
     PImage dead;
     boolean isAlive;
@@ -44,6 +43,7 @@ class Player{
             farbe = (color(0));
             isAlive = false;
         }
+        //Wenn Spieler tot ist, wird das Bild um 180° gedreht und das Bild "dead" wird gezeichnet
         if (!isAlive) {
             imageMode(CENTER);
             pushMatrix();
@@ -53,32 +53,36 @@ class Player{
             return;
         }
         sway = 30;
+        //Wenn eine Taste gedrückt wird, wird sway auf 100 gesetzt ansonten auf 30
         for (boolean b : keys) {
             if (b) {
                 sway = 100;
             }
         }
+        //überprüfen ob der Spieler getroffen wurde
         checkHit();
-        color curcol = g.fillColor;
-        fill(farbe);
+        
         rectMode(CENTER);
         imageMode(CENTER);
+        //Spielerrechteck zeichnen
         image(img,0,0,size * 1.5,size * 1.5);
-        //rect(0,0,size,size);
-        fill(curcol);
+        //Waffen Ursprung auf Spieler setzen
         for (Weapon Waffe : Waffen) {
             Waffe.Origin = new PVector(worldCamera.Pos.x + width / 2,worldCamera.Pos.y + height / 2);
         }
         
     }
     
+    //Waffen rendern
     void renderWeapons() {
         for (Weapon Waffe : Waffen) {
             Waffe.render();
+            //Waffe auf Mausposition setzen
             Waffe.setTarget(worldCamera.Pos.x + mouseX + int(random( -sway,sway)),worldCamera.Pos.y + mouseY + int(random( -sway,sway)));     
         }
     }
     
+    //dreht den Spieler zur Maus
     void rot() {
         pushMatrix();
         if (isAlive) {
@@ -122,9 +126,11 @@ class Player{
         
     }
     
+    //Überprüft ob der Spieler mit einer Wand kollidiert
     boolean getCollision(PVector Pos) {
         
         for (Wall Wall : Waende) {
+            //Wenn der Spieler mit einer Wand kollidieren würde,wird true zurückgegeben
             if (x + Pos.x + size / 2 >= Wall.Pos.x && x + Pos.x - size / 2 <= Wall.Pos.x + Wall.w && 
                 y + Pos.y + size / 2 >= Wall.Pos.y && y + Pos.y - size / 2 <= Wall.Pos.y + Wall.h) {
                 return true;
@@ -134,11 +140,12 @@ class Player{
         return false;
     }
     
-    
+    //Gegnerprojektile setzen
     void setProjectiles(Projectile[] Bullets) {
         EnemyProj = Bullets;
     }
     
+    //Wände setzen
     void setWalls(Wall[] Walls) {
         this.Waende = Walls;
         for (Weapon Waffe : Waffen) {
@@ -146,15 +153,19 @@ class Player{
         }
     }
     
+    //Überprüft ob der Spieler getroffen wurde
     void checkHit() {
         for (Projectile Bullet : EnemyProj) {
             if (Bullet.isActive) {
-                
+                //Distanz zwischen Spieler und Projektil berechnen
                 float disX = worldCamera.Pos.x + width / 2 - Bullet.Pos.x;
                 float disY = worldCamera.Pos.y + height / 2 - Bullet.Pos.y;
+                //Wenn die Distanz kleiner als der Radius des Spielers ist, wird der Spieler getroffen
                 if (sqrt(sq(disX) + sq(disY)) < size / 2 && Bullet.isActive) {
+                    //Spieler verliert HP und Projektil wird zurückgesetzt
                     hp = hp - Bullet.damage;
                     Bullet.init();
+                    //Wenn der Spieler tot ist, wird ein Sound gesendet
                     if (hp <= 0) {
                         int sound = int(random(0,4));
                         osc.send(hitMessages[sound], meineAdresse);

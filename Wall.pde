@@ -4,6 +4,7 @@ class Wall{
     int h;
     PImage img;
     
+    //Konstruktor
     Wall(PVector Pos, int w, int h) {
         this.Pos = Pos;
         this.w = w;
@@ -15,11 +16,14 @@ class Wall{
             img = loadImage("wallHorizontal.png");
         }
     }
+    
     void render() {
+        //Wand wird gezeichnet
         fill(0,255,0);
         rectMode(CORNER);
         rect(Pos.x,Pos.y,w,h);
         imageMode(CORNER);
+        //Wenn die Wand breiter als hoch ist, wird das Bild so oft horizontal gezeichnet, bis die Wand vollständig bedeckt ist
         if (w > h) {
             img.resize(h,h);
             for (int i = 0; i < w; i = i + img.width) {
@@ -33,6 +37,7 @@ class Wall{
                 
             }
         }
+        //Wenn die Wand höher als breit ist, wird das Bild so oft vertikal gezeichnet, bis die Wand vollständig bedeckt ist
         else{
             img.resize(w,w);
             for (int i = 0; i < h; i = i + img.height) {
@@ -47,11 +52,9 @@ class Wall{
         }
         fill(0);
         stroke(0);
-        //line(Pos.x,Pos.y,Pos.x + w,Pos.y + h);
-        //line(Pos.x,Pos.y + h,Pos.x + w,Pos.y);
         
     }
-    
+    //Methode, die prüft, ob die Wand auf dem Bildschirm ist
     boolean isOnScreen() {
         if (Pos.x > worldCamera.Pos.x + width || Pos.x + w < worldCamera.Pos.x) {
             return false;

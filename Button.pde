@@ -5,7 +5,7 @@ class Button{
     color farbe;
     String Text;
     
-    //Constructor for button        
+    //Konstruktor     
     Button(PVector _Pos, int _w, int _h, color _farbe, String _Text) {
         Pos = _Pos;
         w = _w;
@@ -14,18 +14,19 @@ class Button{
         Text = _Text;
     }
     
-    //render the button
+    //Button anzeigen
     void render() {
         rectMode(CORNER);
         fill(farbe);
         rect(Pos.x, Pos.y, w, h);
         fill(0);
         textSize(20);
-        textMode(CENTER);
+        fill(255);
         text(Text, Pos.x + w / 4, Pos.y + h / 4,w,h);
+        fill(0);
     }
     
-    
+    //Button anklicken / überprüfen ob Maus über Button
     boolean mouseOver() {
         if (mouseX >= Pos.x && mouseX <= Pos.x + w && 
             mouseY >= Pos.y && mouseY <= Pos.y + h) {

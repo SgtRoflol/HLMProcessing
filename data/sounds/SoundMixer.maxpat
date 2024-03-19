@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 895.0, 288.0, 640.0, 480.0 ],
+		"rect" : [ 907.0, 243.0, 640.0, 480.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -91,7 +91,7 @@
 					"basictuning" : 440,
 					"data" : 					{
 						"clips" : [ 							{
-								"absolutepath" : "Macintosh HD:/Users/tim/Projects/Processing/SpielAbgabe/Spiel3/data/sounds/Hit3.wav",
+								"absolutepath" : "Hit3.wav",
 								"filename" : "Hit3.wav",
 								"filekind" : "audiofile",
 								"id" : "u013003187",
@@ -127,7 +127,7 @@
 					"basictuning" : 440,
 					"data" : 					{
 						"clips" : [ 							{
-								"absolutepath" : "Macintosh HD:/Users/tim/Projects/Processing/SpielAbgabe/Spiel3/data/sounds/Hit2.wav",
+								"absolutepath" : "Hit2.wav",
 								"filename" : "Hit2.wav",
 								"filekind" : "audiofile",
 								"id" : "u533003171",
@@ -163,7 +163,7 @@
 					"basictuning" : 440,
 					"data" : 					{
 						"clips" : [ 							{
-								"absolutepath" : "Macintosh HD:/Users/tim/Projects/Processing/SpielAbgabe/Spiel3/data/sounds/Hit1.wav",
+								"absolutepath" : "Hit1.wav",
 								"filename" : "Hit1.wav",
 								"filekind" : "audiofile",
 								"id" : "u277003155",
@@ -199,7 +199,7 @@
 					"basictuning" : 440,
 					"data" : 					{
 						"clips" : [ 							{
-								"absolutepath" : "Macintosh HD:/Users/tim/Projects/Processing/SpielAbgabe/Spiel3/data/sounds/Hit.wav",
+								"absolutepath" : "Hit.wav",
 								"filename" : "Hit.wav",
 								"filekind" : "audiofile",
 								"id" : "u451003139",
@@ -259,7 +259,7 @@
 					"basictuning" : 440,
 					"data" : 					{
 						"clips" : [ 							{
-								"absolutepath" : "Macintosh HD:/Users/tim/Projects/Processing/SpielAbgabe/Spiel3/data/sounds/Uzi.wav",
+								"absolutepath" : "Uzi.wav",
 								"filename" : "Uzi.wav",
 								"filekind" : "audiofile",
 								"id" : "u074002349",
@@ -295,7 +295,7 @@
 					"basictuning" : 440,
 					"data" : 					{
 						"clips" : [ 							{
-								"absolutepath" : "Macintosh HD:/Users/tim/Projects/Processing/SpielAbgabe/Spiel3/data/sounds/ReloadClip.wav",
+								"absolutepath" : "ReloadClip.wav",
 								"filename" : "ReloadClip.wav",
 								"filekind" : "audiofile",
 								"id" : "u549002333",
@@ -331,7 +331,7 @@
 					"basictuning" : 440,
 					"data" : 					{
 						"clips" : [ 							{
-								"absolutepath" : "Macintosh HD:/Users/tim/Projects/Processing/SpielAbgabe/Spiel3/data/sounds/Famae.wav",
+								"absolutepath" : "Famae.wav",
 								"filename" : "Famae.wav",
 								"filekind" : "audiofile",
 								"id" : "u835001342",
