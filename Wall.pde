@@ -8,7 +8,7 @@ class Wall{
         this.Pos = Pos;
         this.w = w;
         this.h = h;
-        if(w > h){
+        if (w > h) {
             img = loadImage("wallVertical.png");
         }
         else{
@@ -20,16 +20,29 @@ class Wall{
         rectMode(CORNER);
         rect(Pos.x,Pos.y,w,h);
         imageMode(CORNER);
-        if(w > h){
+        if (w > h) {
             img.resize(h,h);
-            for(int i = 0; i < w; i = i + img.width){
-        image(img,Pos.x+i,Pos.y,img.width,img.height);
+            for (int i = 0; i < w; i = i + img.width) {
+                if (img.width > w - i) {
+                    PImage temp = img.get(0,0,w - i,img.height);
+                    image(temp,Pos.x + i,Pos.y,temp.width,temp.height);
+                }
+                else{
+                    image(img,Pos.x + i,Pos.y,img.width,img.height);
+                }
+                
             }
         }
         else{
-                img.resize(w,w);
-                for(int i = 0; i < h; i = i + img.height){
-        image(img,Pos.x,Pos.y+i,img.width,img.height);
+            img.resize(w,w);
+            for (int i = 0; i < h; i = i + img.height) {
+                if (img.height > h - i) {
+                    PImage temp = img.get(0,0,img.width,h - i);
+                    image(temp,Pos.x,Pos.y + i,temp.width,temp.height);
+                }
+                else{
+                    image(img,Pos.x,Pos.y + i,img.width,img.height);
+                }
             }
         }
         fill(0);

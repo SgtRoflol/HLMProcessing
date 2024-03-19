@@ -11,11 +11,18 @@ class Enemy{
     Weapon Waffe;
     int sway;
     PImage img;
+    PImage[] hitImages = new PImage[4];
     PVector lastSeen;
+    int hitIndex;
     
     Enemy(PVector Pos,Wall[] Walls) {
         lastSeen = new PVector(0,0);
         img = loadImage("Enemy.png");
+        hitImages[0] = loadImage("EnemyDead.png");
+        hitImages[1] = loadImage("EnemyDead1.png");
+        hitImages[2] = loadImage("EnemyDead2.png");
+        hitImages[3] = loadImage("EnemyDead3.png");
+        hitIndex = int(random(0,hitImages.length));
         sway = 200;
         maxHp = 30;
         hp = maxHp;
@@ -79,8 +86,12 @@ class Enemy{
             
         }
         else{
-            //Death image here
-            
+            pushMatrix();
+            translate(Pos.x,Pos.y);
+            rotate( -angle + HALF_PI);
+            imageMode(CENTER);
+            image(hitImages[hitIndex],0,0,hitImages[hitIndex].width * 2,hitImages[hitIndex].height * 2);
+            popMatrix();
         }
         
         Waffe.render();
@@ -117,18 +128,7 @@ class Enemy{
         if (hp <= 0) {
             CurScene.enemyAmount--;
             int sound = int(random(0,4));
-            if (sound == 0) {
-                osc.send(hitMessage,meineAdresse);
-            }
-            if (sound == 1) {
-                osc.send(hitMessage1,meineAdresse);
-            }
-            if (sound == 2) {
-                osc.send(hitMessage2,meineAdresse);
-            }
-            if (sound == 3) {
-                osc.send(hitMessage3,meineAdresse);
-            }
+            osc.send(hitMessages[sound], meineAdresse);
             
         }
     }

@@ -6,10 +6,8 @@ NetAddress meineAdresse = new NetAddress("127.0.0.1", 12346);
 OscMessage shotMessage = new OscMessage("shot");
 OscMessage enemyShotMessage = new OscMessage("enemyShot");
 OscMessage reloadMessage = new OscMessage("reload");
-OscMessage hitMessage = new OscMessage("hit");
-OscMessage hitMessage1 = new OscMessage("hit1");
-OscMessage hitMessage2 = new OscMessage("hit2");
-OscMessage hitMessage3 = new OscMessage("hit3");
+
+OscMessage[] hitMessages = new OscMessage[4];
 
 Camera worldCamera; //Kamera
 boolean[] keys = new boolean[160];
@@ -25,15 +23,20 @@ String PackagePath;
 Goal Ziel;
 PImage background;
 boolean menu;
+boolean finished;
 Menu startScreen;
 
 
 void setup() {
+    hitMessages[0] = new OscMessage("hit");
+    hitMessages[1] = new OscMessage("hit1");
+    hitMessages[2] = new OscMessage("hit2");
+    hitMessages[3] = new OscMessage("hit3");
     startScreen = new Menu();
     menu = true;
     Ziel = new Goal(width / 2 - 70 ,height / 2, 180,100);
     curLevel = 1;
-    savedLevel = 1;
+    savedLevel = 2;
     PackagePath = sketchPath();
     size(800, 800,P2D);
     frameRate(60);
@@ -41,7 +44,16 @@ void setup() {
 }
 
 void draw() {
-    if (!menu) {
+    if (finished) {
+        background(0);
+        textSize(50);
+        textAlign(CENTER);
+        text("Congratulations,", width / 2, height / 2);
+        text("you have finished the game!", width / 2, height / 2 + 50);
+        textAlign(LEFT);
+        return;
+    }
+    if (!menu && !finished) {
         worldCamera.screenshake();
         background(255);
         //Alles andere muss nach der Worldcamera gezeichnet werden!
@@ -54,11 +66,11 @@ void draw() {
                 image(background,i,j,background.width,background.height);
             }
         }
-        Play.renderWeapons();
+        CurScene.render();
+                Play.renderWeapons();
         if (Play.isAlive) {
             curWeapon.shoot();
         }
-        CurScene.render();
         //WorldCamera Ende
         Ziel.render();
         popMatrix();
@@ -73,6 +85,12 @@ void draw() {
     }
     else{
         startScreen.render();
+        if (CurScene != null) {
+            textSize(30);
+            textAlign(CENTER);
+            text("ESC to return to game", width / 2, height - 200);
+            textAlign(LEFT);
+        }
     }
 }
 void mousePressed() {
@@ -149,21 +167,22 @@ void loadScene(String path, int index) {
 }
 
 void initScene() {
-    worldCamera.Pos.x = 0;
-    worldCamera.Pos.y = 0;
-    Play.hp = 30;
-    CurScene.init();
-    Play.isAlive = true;
-    CurScene.enemyAmount = CurScene.Gegners.length;
-    
-    for (Weapon Waffe : Play.Waffen) {
-        PlayerProj = (Projectile[])concat(PlayerProj, Waffe.getBullets());
-        Waffe.ammo = Waffe.maxAmmo;
+    if (!finished) {
+        worldCamera.Pos.x = 0;
+        worldCamera.Pos.y = 0;
+        Play.hp = 30;
+        CurScene.init();
+        Play.isAlive = true;
+        CurScene.enemyAmount = CurScene.Gegners.length;
+        
+        for (Weapon Waffe : Play.Waffen) {
+            PlayerProj = (Projectile[])concat(PlayerProj, Waffe.getBullets());
+            Waffe.ammo = Waffe.maxAmmo;
+        }
+        getEnemyProj();
+        Play.setProjectiles(EnemyProj);
+        Overlay = new Hud();
+        CurScene.setPlayer(Play);
+        Play.setWalls(CurScene.getWalls());
     }
-    getEnemyProj();
-    Play.setProjectiles(EnemyProj);
-    Overlay = new Hud();
-    CurScene.setPlayer(Play);
-    Play.setWalls(CurScene.getWalls());
-    
 }

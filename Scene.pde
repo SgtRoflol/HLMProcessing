@@ -14,6 +14,10 @@ class Scene{
     
     void loadWalls(String FileName) {
         JSONArray values = loadJSONArray(FileName);
+        if (values == null) {
+            finished = true;
+            return;
+        }
         Waende = new Wall[values.size()];
         for (int i = 0; i < values.size(); i++) {
             
@@ -31,6 +35,10 @@ class Scene{
     
     void loadEnemies(String FileName) {
         JSONArray values = loadJSONArray(FileName);
+        if (values == null) {
+            finished = true;
+            return;
+        }
         Gegners = new Enemy[values.size()];
         
         for (int i = 0;i < values.size(); i++) {
